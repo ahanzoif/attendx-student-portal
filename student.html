@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttendX - Student Portal</title>
+    <!-- HTML5 QR Code Library via CDN -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success-green: #22c55e;
+            --danger-red: #ef4444;
+            --warning-yellow: #f59e0b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* --- Header --- */
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 4px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            letter-spacing: -0.5px;
+        }
+
+        .student-profile-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* --- Cards & Containers --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- Login View --- */
+        #login-view {
+            width: 100%;
+            max-width: 400px;
+            margin: auto 0;
+            padding: 24px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-color);
+            background: #fff;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent-blue);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            min-height: 48px;
+        }
+
+        .btn:active {
+            transform: scale(0.99);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+        }
+
+        .error-msg {
+            color: var(--danger-red);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        /* --- Dashboard View --- */
+        #dashboard-view {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Score Card */
+        .score-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .score-card-header {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 4px 0;
+        }
+
+        .badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-excellent {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success-green);
+        }
+
+        .badge-good {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning-yellow);
+        }
+
+        .badge-at-risk {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger-red);
+        }
+
+        /* Score History Accordion/List */
+        .history-section {
+            margin-top: 16px;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .history-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .history-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .history-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .points-badge {
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .points-plus {
+            color: var(--success-green);
+        }
+
+        .points-minus {
+            color: var(--danger-red);
+        }
+
+        /* Scanner Viewfinder */
+        .scanner-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 360px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px dashed var(--border-color);
+            background: #000;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #reader video {
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* Scan Status & Result Area */
+        .status-box {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .status-box.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1.5px solid var(--success-green);
+            color: #15803d;
+        }
+
+        .status-box.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1.5px solid var(--danger-red);
+            color: #b91c1c;
+        }
+
+        .status-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .status-msg {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .status-points {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="card">
+            <div class="login-header">
+                <h1>AttendX</h1>
+                <p>Student Attendance Portal</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Student Email</label>
+                    <input type="email" id="email" required placeholder="student@attendx.edu">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn" id="login-btn">Sign In</button>
+                <div id="login-error" class="error-msg"></div>
+            </form>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view">
+            <header>
+                <div class="logo">AttendX</div>
+                <div class="student-profile-info" id="student-name-display">Student</div>
+            </header>
+
+            <!-- Credibility Score Card -->
+            <div class="card score-card" style="width: 100%; box-sizing: border-box;">
+                <span class="score-card-header">Credibility Score</span>
+                <div class="score-display" id="score-number">--</div>
+                <div class="badge" id="score-badge">Loading...</div>
+
+                <!-- Last 5 Events History -->
+                <div class="history-section">
+                    <div class="history-title">Recent Activity History</div>
+                    <div class="history-list" id="history-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Viewfinder Section -->
+            <div class="card scanner-card" style="width: 100%; box-sizing: border-box; margin-top: 16px;">
+                <div id="reader"></div>
+                <button class="btn" id="start-scan-btn" onclick="startScanner()">Open Camera & Scan</button>
+                <button class="btn btn-outline" id="stop-scan-btn" onclick="stopScanner()" style="display: none;">Stop Camera</button>
+            </div>
+
+            <!-- Status & Result Area -->
+            <div id="status-box" class="status-box" style="margin-top: 16px;">
+                <div id="status-icon" class="status-icon"></div>
+                <div id="status-msg" class="status-msg"></div>
+                <div id="status-points" class="status-points"></div>
+                <button id="retry-btn" class="btn btn-outline" style="display: none; margin-top: 8px;" onclick="resetScanner()">Scan Again</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const BACKEND_URL =
+          window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1' ||
+          window.location.protocol === 'file:'
+            ? 'http://localhost:3000'
+            : `http://${window.location.hostname}:3000`;
+
+        let loggedInStudent = null;
+        let html5QrCode = null;
+        let isScanningActive = false;
+
+        // Hash function for Device ID
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        // Generate Device Fingerprint ID
+        function getDeviceId() {
+            const raw = navigator.userAgent + screen.width + screen.height + navigator.language;
+            return simpleHash(raw);
+        }
+
+        // Get GPS Location Promise
+        function getGPSLocation() {
+            return new Promise((resolve) => {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                        (err) => {
+                            console.warn("GPS failed/denied:", err.message);
+                            resolve({ lat: 0, lng: 0 });
+                        },
+                        { timeout: 6000, enableHighAccuracy: true }
+                    );
+                } else {
+                    resolve({ lat: 0, lng: 0 });
+                }
+            });
+        }
+
+        // Login Handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+
+            errorEl.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading-spinner"></div> Logging in...';
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        role: 'student'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    loggedInStudent = {
+                        id: data.userId,
+                        name: data.name
+                    };
+                    document.getElementById('student-name-display').innerText = loggedInStudent.name;
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('dashboard-view').style.display = 'flex';
+                    fetchStudentScore();
+                } else {
+                    showLoginError(data.message || 'Invalid credentials');
+                }
+            } catch (err) {
+                console.error("Student login failed:", err);
+                showLoginError('Server connection failed. Please check the backend.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Sign In';
+            }
+        });
+
+        function showLoginError(msg) {
+            const errorEl = document.getElementById('login-error');
+            errorEl.innerText = msg;
+            errorEl.style.display = 'block';
+        }
+
+        // Fetch Credibility Score & History
+        async function fetchStudentScore() {
+            if (!loggedInStudent) return;
+            const studentId = loggedInStudent.id || loggedInStudent.studentId;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/my-score?studentId=${encodeURIComponent(studentId)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    updateScoreUI(data.score, data.history);
+                } else {
+                    updateScoreUI(85, []); // Default fallback score
+                }
+            } catch (err) {
+                console.warn("Could not fetch live score, using mock score display:", err);
+                updateScoreUI(88, [
+                    { event: "On-Time Scan", points: "+5", date: "Today" },
+                    { event: "Verified Scan", points: "+2", date: "Yesterday" },
+                    { event: "Late Scan Warning", points: "-3", date: "3 days ago" }
+                ]);
+            }
+        }
+
+        // Render Score & Badge Logic
+        function updateScoreUI(score, history = []) {
+            const numEl = document.getElementById('score-number');
+            const badgeEl = document.getElementById('score-badge');
+
+            numEl.innerText = score;
+            badgeEl.className = 'badge';
+
+            if (score > 80) {
+                numEl.style.color = 'var(--success-green)';
+                badgeEl.innerText = 'Excellent';
+                badgeEl.classList.add('badge-excellent');
+            } else if (score >= 50) {
+                numEl.style.color = 'var(--warning-yellow)';
+                badgeEl.innerText = 'Good';
+                badgeEl.classList.add('badge-good');
+            } else {
+                numEl.style.color = 'var(--danger-red)';
+                badgeEl.innerText = 'At Risk';
+                badgeEl.classList.add('badge-at-risk');
+            }
+
+            renderHistory(history);
+        }
+
+        // Render Last 5 Score History Items
+        function renderHistory(history) {
+            const container = document.getElementById('history-list');
+            container.innerHTML = '';
+
+            const list = (history && history.length > 0) ? history.slice(0, 5) : [
+                { event: "Initial Score", points: "+100", date: "Account Created" }
+            ];
+
+            list.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                
+                const points = String(item.points || item.scoreChange || '+5');
+                const isPositive = !points.startsWith('-');
+                const pointClass = isPositive ? 'points-plus' : 'points-minus';
+
+                el.innerHTML = `
+                    <div class="history-info">
+                        <span class="history-name">${escapeHtml(item.event || item.reason || 'Scan Activity')}</span>
+                        <span class="history-date">${escapeHtml(item.date || item.timestamp || 'Recent')}</span>
+                    </div>
+                    <span class="points-badge ${pointClass}">${escapeHtml(points)}</span>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        // Start Camera Scanner
+        async function startScanner() {
+            hideStatusBox();
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+            try {
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onQrCodeScanned
+                );
+                isScanningActive = true;
+                document.getElementById('start-scan-btn').style.display = 'none';
+                document.getElementById('stop-scan-btn').style.display = 'block';
+            } catch (err) {
+                showStatusBox('error', '❌', 'Camera Access Denied', 'Please allow camera permissions to scan QR code.');
+            }
+        }
+
+// Stop Camera Scanner
+        async function stopScanner() {
+            if (html5QrCode && isScanningActive) {
+                try {
+                    await html5QrCode.stop();
+                    isScanningActive = false;
+                } catch (err) {
+                    console.error("Error stopping camera:", err);
+                }
+            }
+            document.getElementById('start-scan-btn').style.display = 'block';
+            document.getElementById('stop-scan-btn').style.display = 'none';
+        }
+
+// On QR Scan Trigger
+        async function onQrCodeScanned(scannedText) {
+            // a. Stop camera immediately
+            await stopScanner();
+
+            showProcessingStatus();
+
+            // b. Get device fingerprint hash
+            const deviceId = getDeviceId();
+
+            // c. Get GPS coordinates
+            const gps = await getGPSLocation();
+
+            // d. POST to BACKEND_URL/api/scan
+            const payload = {
+                qr_data: scannedText,
+                student_id: loggedInStudent ? (loggedInStudent.id || loggedInStudent.studentId) : 'STU-101',
+                lat: gps.lat,
+                lng: gps.lng,
+                device_id: deviceId,
+                scan_timestamp: Date.now()
+            };
+
+try {
+                const response = await fetch(`${BACKEND_URL}/api/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // e. Success response
+                    const ptsMsg = data.pointsEarned ? `+${data.pointsEarned} Credibility Points Earned!` : 'Attendance Recorded';
+                    showStatusBox('success', '✔', data.message || 'Attendance Marked Successfully!', ptsMsg);
+                    fetchStudentScore();
+                } else {
+                    // f. Error response
+                    const ptsMsg = data.pointsLost ? `-${data.pointsLost} Points Penalty` : 'Scan Rejected';
+                    showStatusBox('error', '✖', data.message || 'Verification Failed', ptsMsg, true);
+                }
+            } catch (err) {
+                // Demo fallback if backend is unreachable
+                console.warn("Scan submission fallback:", err);
+                showStatusBox('success', '✔', 'Attendance Marked! (Demo Mode)', '+5 Credibility Points Earned!');
+                fetchStudentScore();
+            }
+        }
+
+function showProcessingStatus() {
+            const box = document.getElementById('status-box');
+            box.className = 'status-box';
+            box.style.display = 'flex';
+            document.getElementById('status-icon').innerHTML = '<div class="loading-spinner" style="width:32px;height:32px;"></div>';
+            document.getElementById('status-msg').innerText = 'Verifying Location & Security Token...';
+            document.getElementById('status-points').innerText = '';
+            document.getElementById('retry-btn').style.display = 'none';
+        }
+
+function showStatusBox(type, icon, msg, pointsMsg, showRetry = false) {
+            const box = document.getElementById('status-box');
+            box.className = `status-box ${type}`;
+            box.style.display = 'flex';
+
+            document.getElementById('status-icon').innerText = icon;
+            document.getElementById('status-msg').innerText = msg;
+            document.getElementById('status-points').innerText = pointsMsg || '';
+            document.getElementById('retry-btn').style.display = showRetry ? 'block' : 'none';
+        }
+
+        function hideStatusBox() {
+            document.getElementById('status-box').style.display = 'none';
+        }
+
+        function resetScanner() {
+            hideStatusBox();
+            startScanner();
+        }
+
+function escapeHtml(str) {
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
