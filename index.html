@@ -1,16 +1,526 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AttendX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AttendX - Smart Attendance System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #020617;
+            --card: #0f172a;
+            --border: rgba(255, 255, 255, 0.09);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.18), transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.12), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Background decoration */
+
+        .orb {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.08);
+            filter: blur(80px);
+            z-index: -1;
+        }
+
+        .orb.one {
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb.two {
+            bottom: -120px;
+            right: -100px;
+        }
+
+        /* Navbar */
+
+        nav {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 25px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                #60a5fa
+            );
+
+            border-radius: 11px;
+
+            font-weight: 900;
+            color: white;
+
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .nav-badge {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+
+            font-size: 0.8rem;
+            color: var(--muted);
+
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hero */
+
+        .hero {
+            max-width: 1100px;
+            margin: auto;
+
+            min-height: calc(100vh - 90px);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 60px 25px 100px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 15px;
+
+            border: 1px solid rgba(96, 165, 250, 0.25);
+            border-radius: 30px;
+
+            background: rgba(37, 99, 235, 0.08);
+
+            color: #93c5fd;
+
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            margin-bottom: 25px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 0.95;
+
+            letter-spacing: -4px;
+
+            margin-bottom: 25px;
+        }
+
+        h1 .highlight {
+            background: linear-gradient(
+                90deg,
+                #2563eb,
+                #60a5fa
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            max-width: 650px;
+
+            color: var(--muted);
+
+            font-size: 1.1rem;
+            line-height: 1.7;
+
+            margin-bottom: 45px;
+        }
+
+        /* Portal cards */
+
+        .portal-container {
+            width: 100%;
+            max-width: 850px;
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+        .portal-card {
+            position: relative;
+
+            padding: 30px;
+
+            text-align: left;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 23, 42, 0.95),
+                    rgba(15, 23, 42, 0.65)
+                );
+
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
+            text-decoration: none;
+            color: white;
+
+            overflow: hidden;
+
+            transition:
+                transform 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .portal-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            border-radius: 50%;
+
+            background: rgba(37, 99, 235, 0.12);
+
+            top: -70px;
+            right: -70px;
+
+            transition: transform 0.4s ease;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-8px);
+
+            border-color: rgba(96, 165, 250, 0.4);
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.35),
+                0 0 30px rgba(37, 99, 235, 0.08);
+        }
+
+        .portal-card:hover::before {
+            transform: scale(1.5);
+        }
+
+        .portal-icon {
+            width: 55px;
+            height: 55px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 15px;
+
+            background: rgba(37, 99, 235, 0.15);
+
+            color: #60a5fa;
+
+            font-size: 1.6rem;
+
+            margin-bottom: 22px;
+        }
+
+        .portal-card h2 {
+            font-size: 1.35rem;
+            margin-bottom: 9px;
+        }
+
+        .portal-card p {
+            color: var(--muted);
+
+            font-size: 0.9rem;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+        }
+
+        .portal-link {
+            color: #60a5fa;
+
+            font-size: 0.9rem;
+            font-weight: 700;
+
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .arrow {
+            transition: transform 0.2s ease;
+        }
+
+        .portal-card:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        /* Features */
+
+        .features {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 35px;
+
+            margin-top: 45px;
+
+            color: var(--muted);
+
+            font-size: 0.82rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .feature-check {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        /* Footer */
+
+        footer {
+            text-align: center;
+
+            padding: 20px;
+
+            color: #64748b;
+
+            font-size: 0.75rem;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 700px) {
+
+            nav {
+                padding: 20px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            h1 {
+                letter-spacing: -2px;
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+            }
+
+            .portal-container {
+                grid-template-columns: 1fr;
+            }
+
+            .portal-card {
+                padding: 25px;
+            }
+
+            .features {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>AttendX</h1>
-    <p>
-        <a href="/teacher.html">Teacher Portal</a>
-    </p>
-    <p>
-        <a href="/student.html">Student Portal</a>
-    </p>
+
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <!-- Navbar -->
+
+    <nav>
+
+        <div class="logo">
+            <div class="logo-icon">A</div>
+            Attend<span>X</span>
+        </div>
+
+        <div class="nav-badge">
+            Smart Attendance System
+        </div>
+
+    </nav>
+
+
+    <!-- Hero Section -->
+
+    <main class="hero">
+
+        <div class="hero-badge">
+            <span class="dot"></span>
+            Attendance Management, Simplified
+        </div>
+
+        <h1>
+            Smarter Attendance.<br>
+            <span class="highlight">Simpler Campus.</span>
+        </h1>
+
+        <p class="hero-description">
+            AttendX is a smart attendance management system designed
+            to make attendance fast, secure and reliable for both
+            students and teachers.
+        </p>
+
+
+        <!-- Portal Selection -->
+
+        <div class="portal-container">
+
+            <!-- Teacher -->
+
+            <a href="/teacher.html" class="portal-card">
+
+                <div class="portal-icon">
+                    👨‍🏫
+                </div>
+
+                <h2>Teacher Portal</h2>
+
+                <p>
+                    Create attendance sessions, generate dynamic QR
+                    codes and monitor student attendance in real time.
+                </p>
+
+                <div class="portal-link">
+                    Enter Teacher Portal
+                    <span class="arrow">→</span>
+                </div>
+
+            </a>
+
+
+            <!-- Student -->
+
+            <a href="/student.html" class="portal-card">
+
+                <div class="portal-icon">
+                    🎓
+                </div>
+
+                <h2>Student Portal</h2>
+
+                <p>
+                    Scan the attendance QR code, verify your presence
+                    and keep track of your credibility score.
+                </p>
+
+                <div class="portal-link">
+                    Enter Student Portal
+                    <span class="arrow">→</span>
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- Features -->
+
+        <div class="features">
+
+            <div class="feature">
+                <span class="feature-check">✓</span>
+                QR Based Attendance
+            </div>
+
+            <div class="feature">
+                <span class="feature-check">✓</span>
+                Real-time Monitoring
+            </div>
+
+            <div class="feature">
+                <span class="feature-check">✓</span>
+                Secure Verification
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+        © 2026 AttendX · Smart Attendance Management System
+    </footer>
+
 </body>
 </html>
