@@ -437,20 +437,49 @@
     </div>
 
     <script>
+        /*
+         * Backend configuration:
+         * - Set window.ATTENDX_BACKEND_URL before this script to override.
+         * - localhost -> local Node server.
+         * - file:// -> laptop LAN IP (change LAN_BACKEND_HOST when needed).
+         * - any other host -> same host on port 3000.
+         */
         const LOCAL_BACKEND_URL = 'http://localhost:3000';
-const PRODUCTION_BACKEND_URL =
-    'https://attendx-backend-om12.onrender.com';
+        const LAN_BACKEND_HOST = '10.130.152.50';
+        const PRODUCTION_BACKEND_URL = '';
 
-const BACKEND_URL =
-    window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    window.location.protocol === 'file:'
-        ? LOCAL_BACKEND_URL
-        : PRODUCTION_BACKEND_URL;
+        function resolveBackendUrl() {
+            const override = window.ATTENDX_BACKEND_URL;
+            if (override) {
+                return String(override).replace(/\/$/, '');
+            }
 
-let loggedInStudent = null;
-let html5QrCode = null;
-let isScanningActive = false;
+            const host = window.location.hostname;
+            const protocol =
+                window.location.protocol === 'https:' ? 'https:' : 'http:';
+
+            if (host === 'localhost' || host === '127.0.0.1') {
+                return LOCAL_BACKEND_URL;
+            }
+
+            if (window.location.protocol === 'file:') {
+                return `http://${LAN_BACKEND_HOST}:3000`;
+            }
+
+            if (PRODUCTION_BACKEND_URL) {
+                return PRODUCTION_BACKEND_URL.replace(/\/$/, '');
+            }
+
+            return `${protocol}//${host}:3000`;
+        }
+
+        const BACKEND_URL = resolveBackendUrl();
+        console.log('AttendX student backend:', BACKEND_URL);
+
+        let loggedInStudent = null;
+        let html5QrCode = null;
+        let isScanningActive = false;
+
         // Hash function for Device ID
         function simpleHash(str) {
             let hash = 0;
@@ -464,8 +493,32 @@ let isScanningActive = false;
 
         // Generate Device Fingerprint ID
         function getDeviceId() {
-            const raw = navigator.userAgent + screen.width + screen.height + navigator.language;
-            return simpleHash(raw);
+            const storageKey = 'attendx_device_id';
+
+            try {
+                const existing = localStorage.getItem(storageKey);
+                if (existing) {
+                    return existing;
+                }
+
+                const raw =
+                    navigator.userAgent +
+                    screen.width +
+                    screen.height +
+                    navigator.language;
+
+                const generated = simpleHash(raw);
+                localStorage.setItem(storageKey, generated);
+                return generated;
+            } catch (err) {
+                const raw =
+                    navigator.userAgent +
+                    screen.width +
+                    screen.height +
+                    navigator.language;
+
+                return simpleHash(raw);
+            }
         }
 
         // Get GPS Location Promise
@@ -473,12 +526,19 @@ let isScanningActive = false;
             return new Promise((resolve) => {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(
-                        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                        (pos) => resolve({
+                            lat: pos.coords.latitude,
+                            lng: pos.coords.longitude
+                        }),
                         (err) => {
                             console.warn("GPS failed/denied:", err.message);
                             resolve({ lat: 0, lng: 0 });
                         },
-                        { timeout: 6000, enableHighAccuracy: true }
+                        {
+                            timeout: 8000,
+                            maximumAge: 5000,
+                            enableHighAccuracy: true
+                        }
                     );
                 } else {
                     resolve({ lat: 0, lng: 0 });
@@ -550,15 +610,12 @@ let isScanningActive = false;
                 if (response.ok) {
                     updateScoreUI(data.score, data.history);
                 } else {
-                    updateScoreUI(85, []); // Default fallback score
+                    console.warn('Score request failed:', data.message);
                 }
             } catch (err) {
-                console.warn("Could not fetch live score, using mock score display:", err);
-                updateScoreUI(88, [
-                    { event: "On-Time Scan", points: "+5", date: "Today" },
-                    { event: "Verified Scan", points: "+2", date: "Yesterday" },
-                    { event: "Late Scan Warning", points: "-3", date: "3 days ago" }
-                ]);
+                console.warn('Could not fetch live score:', err);
+                document.getElementById('score-number').innerText = '--';
+                document.getElementById('score-badge').innerText = 'Offline';
             }
         }
 
@@ -684,21 +741,51 @@ try {
 
                 const data = await response.json();
 
-                if (response.ok) {
-                    // e. Success response
-                    const ptsMsg = data.pointsEarned ? `+${data.pointsEarned} Credibility Points Earned!` : 'Attendance Recorded';
-                    showStatusBox('success', '✔', data.message || 'Attendance Marked Successfully!', ptsMsg);
+                if (response.ok && data.success === true) {
+                    const delta = Number(data.pointsDelta ?? 0);
+                    const ptsMsg =
+                        delta > 0
+                            ? `+${delta} Credibility Point${delta === 1 ? '' : 's'}`
+                            : delta < 0
+                                ? `${delta} Credibility Points`
+                                : 'Attendance Recorded';
+
+                    showStatusBox(
+                        'success',
+                        '✔',
+                        data.message || 'Attendance Marked Successfully!',
+                        ptsMsg
+                    );
+
                     fetchStudentScore();
                 } else {
-                    // f. Error response
-                    const ptsMsg = data.pointsLost ? `-${data.pointsLost} Points Penalty` : 'Scan Rejected';
-                    showStatusBox('error', '✖', data.message || 'Verification Failed', ptsMsg, true);
+                    // The backend can return HTTP 200 for business-rule
+                    // rejections, so data.success is the actual result.
+                    const delta = Number(data.pointsDelta ?? 0);
+                    const ptsMsg =
+                        delta < 0
+                            ? `${delta} Credibility Points`
+                            : 'Scan Rejected';
+
+                    showStatusBox(
+                        'error',
+                        '✖',
+                        data.message || 'Verification Failed',
+                        ptsMsg,
+                        true
+                    );
+
+                    fetchStudentScore();
                 }
             } catch (err) {
-                // Demo fallback if backend is unreachable
-                console.warn("Scan submission fallback:", err);
-                showStatusBox('success', '✔', 'Attendance Marked! (Demo Mode)', '+5 Credibility Points Earned!');
-                fetchStudentScore();
+                console.error('Scan submission failed:', err);
+                showStatusBox(
+                    'error',
+                    '✖',
+                    'Could not reach attendance server',
+                    `Check Wi-Fi and make sure ${BACKEND_URL} is reachable.`,
+                    true
+                );
             }
         }
 
