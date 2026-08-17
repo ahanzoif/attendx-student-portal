@@ -437,17 +437,20 @@
     </div>
 
     <script>
-        const BACKEND_URL =
-          window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1' ||
-          window.location.protocol === 'file:'
-            ? 'http://localhost:3000'
-            : `http://${window.location.hostname}:3000`;
+        const LOCAL_BACKEND_URL = 'http://localhost:3000';
+const PRODUCTION_BACKEND_URL =
+    'https://attendx-backend-om12.onrender.com';
 
-        let loggedInStudent = null;
-        let html5QrCode = null;
-        let isScanningActive = false;
+const BACKEND_URL =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+        ? LOCAL_BACKEND_URL
+        : PRODUCTION_BACKEND_URL;
 
+let loggedInStudent = null;
+let html5QrCode = null;
+let isScanningActive = false;
         // Hash function for Device ID
         function simpleHash(str) {
             let hash = 0;
