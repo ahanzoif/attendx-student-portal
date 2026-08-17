@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AttendX - Live Teacher Dashboard</title>
-    <!-- Libraries via CDN -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+
     <style>
         :root {
             --bg-color: #1a1a2e;
@@ -35,7 +36,6 @@
             flex-direction: column;
         }
 
-        /* --- Login View --- */
         #login-view {
             display: flex;
             align-items: center;
@@ -82,7 +82,8 @@
             letter-spacing: 0.5px;
         }
 
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border-radius: 6px;
@@ -94,7 +95,8 @@
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: var(--accent-blue);
         }
 
@@ -136,7 +138,6 @@
             display: none;
         }
 
-        /* --- Dashboard View --- */
         #dashboard-view {
             display: none;
             flex-direction: column;
@@ -253,7 +254,6 @@
             min-width: 30px;
         }
 
-        /* --- Sidebar Right --- */
         .side-panel {
             display: flex;
             flex-direction: column;
@@ -373,109 +373,264 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <!-- LOGIN VIEW -->
     <div id="login-view">
         <div class="login-card">
             <h1>AttendX</h1>
             <p>Teacher Attendance Portal</p>
+
             <form id="login-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="teacher@attendx.edu">
+                    <input
+                        type="email"
+                        id="email"
+                        required
+                        placeholder="teacher@attendx.edu"
+                    >
                 </div>
+
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="••••••••">
+                    <input
+                        type="password"
+                        id="password"
+                        required
+                        placeholder="••••••••"
+                    >
                 </div>
-                <button type="submit" class="btn" id="login-btn">Sign In</button>
+
+                <button type="submit" class="btn" id="login-btn">
+                    Sign In
+                </button>
+
                 <div id="login-error" class="error-msg"></div>
             </form>
         </div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
     <div id="dashboard-view">
+
         <header>
             <div class="logo">AttendX</div>
-            <div class="user-info" id="teacher-display">Welcome, Teacher</div>
+            <div class="user-info" id="teacher-display">
+                Welcome, Teacher
+            </div>
         </header>
 
         <div class="dashboard-container">
-            <!-- Left Side: Controls & QR -->
+
             <div class="main-panel">
+
                 <div class="control-bar">
+
                     <div class="form-group">
                         <label for="subject">Subject</label>
+
                         <select id="subject">
-                            <option value="CS101">CS101 - Computer Science</option>
-                            <option value="MATH201">MATH201 - Linear Algebra</option>
-                            <option value="PHY102">PHY102 - Physics II</option>
+                            <option value="CS101">
+                                CS101 - Computer Science
+                            </option>
+
+                            <option value="MATH201">
+                                MATH201 - Linear Algebra
+                            </option>
+
+                            <option value="PHY102">
+                                PHY102 - Physics II
+                            </option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="class-id">Class / Section</label>
+
                         <select id="class-id">
-                            <option value="SEC-A">Section A</option>
-                            <option value="SEC-B">Section B</option>
-                            <option value="SEC-C">Section C</option>
+                            <option value="SEC-A">
+                                Section A
+                            </option>
+
+                            <option value="SEC-B">
+                                Section B
+                            </option>
+
+                            <option value="SEC-C">
+                                Section C
+                            </option>
                         </select>
                     </div>
-                    <button class="btn" id="btn-start" onclick="startSession()" style="width: auto; padding: 12px 24px;">Start Session</button>
-                    <button class="btn btn-danger" id="btn-end" onclick="endSession()" style="width: auto; padding: 12px 24px; display: none;">End Session</button>
+
+                    <button
+                        class="btn"
+                        id="btn-start"
+                        onclick="startSession()"
+                        style="width: auto; padding: 12px 24px;"
+                    >
+                        Start Session
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        id="btn-end"
+                        onclick="endSession()"
+                        style="width: auto; padding: 12px 24px; display: none;"
+                    >
+                        End Session
+                    </button>
+
                 </div>
 
                 <div class="qr-display-area">
+
                     <div class="qr-wrapper">
-                        <div id="qrcode" class="qr-placeholder">Start a session to generate dynamic QR code</div>
+                        <div
+                            id="qrcode"
+                            class="qr-placeholder"
+                        >
+                            Start a session to generate dynamic QR code
+                        </div>
                     </div>
-                    <div class="timer-container" id="timer-box" style="visibility: hidden;">
-                        <span class="timer-label">Refreshing QR in:</span>
-                        <span class="timer-value" id="timer-count">15</span>
-                        <span class="timer-label">s</span>
+
+                    <div
+                        class="timer-container"
+                        id="timer-box"
+                        style="visibility: hidden;"
+                    >
+                        <span class="timer-label">
+                            Refreshing QR in:
+                        </span>
+
+                        <span
+                            class="timer-value"
+                            id="timer-count"
+                        >
+                            15
+                        </span>
+
+                        <span class="timer-label">
+                            s
+                        </span>
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- Right Side: Lists -->
             <div class="side-panel">
-                <!-- Live Attendance List -->
+
                 <div class="panel-card attendance-card">
+
                     <div class="card-header">
                         <h2>Live Attendance</h2>
-                        <span class="count-badge" id="total-count">0</span>
+
+                        <span
+                            class="count-badge"
+                            id="total-count"
+                        >
+                            0
+                        </span>
                     </div>
-                    <div class="scroll-list" id="attendance-list">
-                        <div class="empty-state" id="attendance-empty">No students marked present yet</div>
+
+                    <div
+                        class="scroll-list"
+                        id="attendance-list"
+                    >
+                        <div
+                            class="empty-state"
+                            id="attendance-empty"
+                        >
+                            No students marked present yet
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- Threat Alerts -->
                 <div class="panel-card threats-card">
+
                     <div class="card-header">
-                        <h2 style="color: var(--threat-red);">Threat Alerts</h2>
+                        <h2 style="color: var(--threat-red);">
+                            Threat Alerts
+                        </h2>
                     </div>
-                    <div class="scroll-list" id="threats-list">
-                        <div class="empty-state" id="threats-empty">No security alerts detected</div>
+
+                    <div
+                        class="scroll-list"
+                        id="threats-list"
+                    >
+                        <div
+                            class="empty-state"
+                            id="threats-empty"
+                        >
+                            No security alerts detected
+                        </div>
                     </div>
+
                 </div>
+
             </div>
+
         </div>
     </div>
 
     <script>
-        // AttendX backend URL
-        const BACKEND_URL =
-            (window.location.hostname === 'localhost' ||
-             window.location.hostname === '127.0.0.1')
-                ? 'http://localhost:3000'
-                : 'https://YOUR-RENDER-URL.onrender.com';
+        /*
+         * ============================================================
+         * ATTENDX BACKEND CONFIGURATION
+         * ============================================================
+         *
+         * YOUR LAPTOP WI-FI IPv4:
+         *      10.130.152.50
+         *
+         * Therefore another device on the same Wi-Fi should use:
+         *      http://10.130.152.50:3000
+         */
+
+        const LOCAL_BACKEND_URL = 'http://localhost:3000';
+        const LAN_BACKEND_HOST = '10.130.152.50';
+        const PRODUCTION_BACKEND_URL = '';
+
+        function resolveBackendUrl() {
+            const override = window.ATTENDX_BACKEND_URL;
+            if (override) {
+                return String(override).replace(/\/$/, '');
+            }
+
+            const host = window.location.hostname;
+            const protocol =
+                window.location.protocol === 'https:' ? 'https:' : 'http:';
+
+            if (host === 'localhost' || host === '127.0.0.1') {
+                return LOCAL_BACKEND_URL;
+            }
+
+            if (window.location.protocol === 'file:') {
+                return `http://${LAN_BACKEND_HOST}:3000`;
+            }
+
+            if (PRODUCTION_BACKEND_URL) {
+                return PRODUCTION_BACKEND_URL.replace(/\/$/, '');
+            }
+
+            return `${protocol}//${host}:3000`;
+        }
+
+        const BACKEND_URL = resolveBackendUrl();
+        console.log('AttendX teacher backend:', BACKEND_URL);
+
 
         let socket = null;
         let qrcodeObj = null;
@@ -485,287 +640,1049 @@
         let teacherData = null;
         let presentCount = 0;
 
-        // Initialize Socket.io Connection
-        function initSocket() {
-            if (socket) return;
+        // Prevent duplicate attendance entries in the dashboard.
+        const markedStudents = new Set();
 
-            socket = io(BACKEND_URL);
+
+        // ============================================================
+        // SOCKET.IO
+        // ============================================================
+
+        function initSocket() {
+
+            if (socket) {
+                return;
+            }
+
+            console.log(
+                'Connecting Socket.IO to:',
+                BACKEND_URL
+            );
+
+            socket = io(BACKEND_URL, {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: Infinity,
+                reconnectionDelay: 1000
+            });
+
 
             socket.on('connect', () => {
-                console.log('Connected to WebSocket server:', socket.id);
+
+                console.log(
+                    'Connected to WebSocket server:',
+                    socket.id
+                );
+
+                syncLiveDashboard();
+
             });
+
 
             socket.on('connect_error', (err) => {
-                console.error('Socket connection error:', err.message);
+
+                console.error(
+                    'Socket connection error:',
+                    err.message
+                );
+
             });
 
-            // Listen: Rotating Token
+
+            // --------------------------------------------------------
+            // NEW QR TOKEN
+            // --------------------------------------------------------
+
             socket.on('new-token', (data) => {
-                // Ignore tokens when there is no active local session.
-                if (!currentSessionId) return;
 
-                const token = typeof data === 'string' ? data : data?.token;
-                if (!token) return;
+                if (!currentSessionId) {
+                    return;
+                }
 
-                renderQRCode(JSON.stringify({ token }));
+                const token =
+                    typeof data === 'string'
+                        ? data
+                        : data?.token;
+
+                if (
+                    !token ||
+                    (
+                        data &&
+                        data.sessionId &&
+                        String(data.sessionId) !== String(currentSessionId)
+                    )
+                ) {
+                    return;
+                }
+
+                renderQRCode(
+                    JSON.stringify({
+                        token: token
+                    })
+                );
+
                 resetCountdown();
+
             });
 
-            // Listen: Student Marked
+
+            // --------------------------------------------------------
+            // STUDENT MARKED
+            // --------------------------------------------------------
+
             socket.on('student-marked', (data) => {
+
+                console.log(
+                    'LIVE ATTENDANCE EVENT RECEIVED:',
+                    data
+                );
+
+                if (!data || !currentSessionId) {
+                    return;
+                }
+
+                /*
+                 * If the backend sends a sessionId with the event,
+                 * ignore events belonging to another session.
+                 */
+                if (
+                    data.sessionId &&
+                    String(data.sessionId) !==
+                    String(currentSessionId)
+                ) {
+                    return;
+                }
+
+                const studentName =
+                    data.studentName ||
+                    data.name ||
+                    'Student';
+
+                const studentKey =
+                    data.studentId ||
+                    data.userId ||
+                    data.studentEmail ||
+                    studentName;
+
+                /*
+                 * One student should appear only once in the live
+                 * attendance list for the current session.
+                 */
+                if (markedStudents.has(String(studentKey))) {
+                    return;
+                }
+
+                markedStudents.add(String(studentKey));
+
                 addStudentToList(
-                    data.studentName || data.name || 'Student',
+                    studentName,
                     data.pointsDelta
                 );
+
             });
 
-            // Listen: Threat Alerts
+
+            // --------------------------------------------------------
+            // THREAT ALERT
+            // --------------------------------------------------------
+
             socket.on('threat-alert', (data) => {
-                addThreatAlert(
-                    data.studentName || data.name || data.studentId || 'Unknown Student',
-                    data.reason || 'Multiple scans detected from 1 device'
+
+                console.log(
+                    'THREAT EVENT RECEIVED:',
+                    data
                 );
-            });
 
-            socket.on('disconnect', () => {
-                console.log('Disconnected from WebSocket server');
-            });
-        }
-
-        // Login Form Handler
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('login-error');
-            const btn = document.getElementById('login-btn');
-
-            errorEl.style.display = 'none';
-            btn.disabled = true;
-            btn.innerText = 'Signing in...';
-
-            try {
-                console.log('Sending login request to:', `${BACKEND_URL}/api/login`);
-
-                const response = await fetch(`${BACKEND_URL}/api/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email,
-                        password,
-                        role: 'teacher'
-                    })
-                });
-
-                const data = await response.json();
-                console.log('Login response:', data);
-
-                if (response.ok && data.success === true) {
-                    teacherData = {
-                        id: data.userId,
-                        name: data.name,
-                        role: data.role
-                    };
-
-                    document.getElementById('teacher-display').innerText =
-                        `Teacher: ${teacherData.name}`;
-
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('dashboard-view').style.display = 'flex';
-
-                    initSocket();
-                } else {
-                    showError(data.message || 'Invalid credentials');
+                if (!data || !currentSessionId) {
+                    return;
                 }
-            } catch (err) {
-                console.error('Login request failed:', err);
-                showError('Server connection failed. Make sure node server.js is running.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Sign In';
-            }
-        });
 
-        function showError(msg) {
-            const errorEl = document.getElementById('login-error');
-            errorEl.innerText = msg;
-            errorEl.style.display = 'block';
+                if (
+                    data.sessionId &&
+                    String(data.sessionId) !== String(currentSessionId)
+                ) {
+                    return;
+                }
+
+                addThreatAlert(
+                    data?.studentName ||
+                    data?.name ||
+                    data?.studentId ||
+                    'Unknown Student',
+
+                    data?.reason ||
+                    'Multiple scans detected from 1 device'
+                );
+
+            });
+
+
+            socket.on('disconnect', (reason) => {
+
+                console.log(
+                    'Disconnected from WebSocket server:',
+                    reason
+                );
+
+            });
+
         }
 
-        // Start Session API Call
-        async function startSession() {
-            const subject = document.getElementById('subject').value;
-            const classId = document.getElementById('class-id').value;
 
-            if (!teacherData?.id) {
-                alert('Teacher is not logged in.');
+        /*
+         * Wait until Socket.IO is connected before starting a session.
+         * This prevents the first QR/attendance event from being missed
+         * when the teacher clicks Start Session immediately after login.
+         */
+        function waitForSocketConnection(timeout = 5000) {
+
+            initSocket();
+
+            if (socket.connected) {
+                return Promise.resolve(true);
+            }
+
+            return new Promise((resolve) => {
+
+                let finished = false;
+
+                const finish = (result) => {
+
+                    if (finished) {
+                        return;
+                    }
+
+                    finished = true;
+
+                    clearTimeout(timeoutId);
+
+                    socket.off('connect', onConnect);
+
+                    resolve(result);
+                };
+
+                const onConnect = () => {
+                    finish(true);
+                };
+
+                const timeoutId = setTimeout(() => {
+                    finish(false);
+                }, timeout);
+
+                socket.once('connect', onConnect);
+
+            });
+
+        }
+
+        async function syncLiveDashboard() {
+            if (!currentSessionId) {
                 return;
             }
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/session/start`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        teacherId: teacherData.id,
-                        subject,
-                        classId
-                    })
-                });
+                const response = await fetch(
+                    `${BACKEND_URL}/api/session/live?sessionId=${encodeURIComponent(currentSessionId)}`,
+                    { cache: 'no-store' }
+                );
 
                 const data = await response.json();
-                console.log('Session start response:', data);
 
-                if (response.ok && data.success === true) {
-                    currentSessionId = data.sessionId;
-                    toggleSessionState(true);
-                    clearQR();
-                    startTimer();
-                } else {
-                    alert('Failed to start session: ' + (data.message || 'Unknown error'));
+                if (
+                    !response.ok ||
+                    data.success !== true ||
+                    String(data.sessionId) !== String(currentSessionId)
+                ) {
+                    console.warn('Live dashboard sync failed:', data);
+                    return;
                 }
+
+                resetAttendanceList();
+                resetThreatList();
+
+                const attendance = Array.isArray(data.attendance)
+                    ? data.attendance
+                    : [];
+
+                attendance
+                    .slice()
+                    .reverse()
+                    .forEach((row) => {
+                        const studentKey =
+                            row.student_id ||
+                            row.studentName ||
+                            `attendance-${row.id}`;
+
+                        if (!markedStudents.has(String(studentKey))) {
+                            markedStudents.add(String(studentKey));
+
+                            addStudentToList(
+                                row.studentName || 'Student',
+                                row.points_delta
+                            );
+                        }
+                    });
+
+                const threats = Array.isArray(data.threats)
+                    ? data.threats
+                    : [];
+
+                threats
+                    .slice()
+                    .reverse()
+                    .forEach((threat) => {
+                        addThreatAlert(
+                            threat.student_name ||
+                            threat.studentName ||
+                            threat.student_id ||
+                            'Student',
+                            threat.reason ||
+                            'Security threat detected'
+                        );
+                    });
             } catch (err) {
-                console.error('Session start failed:', err);
-                alert('Server connection failed. Make sure node server.js is running.');
+                console.warn('Live dashboard sync error:', err);
             }
         }
 
-        // End Session API Call
-        async function endSession() {
-            if (!currentSessionId) return;
 
-            const sessionIdToEnd = currentSessionId;
+        // ============================================================
+        // LOGIN
+        // ============================================================
+
+        document
+            .getElementById('login-form')
+            .addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                const email =
+                    document
+                        .getElementById('email')
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById('password')
+                        .value;
+
+                const errorEl =
+                    document.getElementById('login-error');
+
+                const btn =
+                    document.getElementById('login-btn');
+
+
+                errorEl.style.display = 'none';
+
+                btn.disabled = true;
+
+                btn.innerText = 'Signing in...';
+
+
+                try {
+
+                    console.log(
+                        'Sending login request to:',
+                        `${BACKEND_URL}/api/login`
+                    );
+
+
+                    const response =
+                        await fetch(
+                            `${BACKEND_URL}/api/login`,
+                            {
+                                method: 'POST',
+
+                                headers: {
+                                    'Content-Type':
+                                        'application/json'
+                                },
+
+                                body: JSON.stringify({
+                                    email,
+                                    password,
+                                    role: 'teacher'
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        'Login response:',
+                        data
+                    );
+
+
+                    if (
+                        response.ok &&
+                        data.success === true
+                    ) {
+
+                        teacherData = {
+                            id: data.userId,
+                            name: data.name,
+                            role: data.role
+                        };
+
+
+                        document
+                            .getElementById('teacher-display')
+                            .innerText =
+                            `Teacher: ${teacherData.name}`;
+
+
+                        document
+                            .getElementById('login-view')
+                            .style.display = 'none';
+
+
+                        document
+                            .getElementById('dashboard-view')
+                            .style.display = 'flex';
+
+
+                        initSocket();
+
+                    } else {
+
+                        showError(
+                            data.message ||
+                            'Invalid credentials'
+                        );
+
+                    }
+
+                } catch (err) {
+
+                    console.error(
+                        'Login request failed:',
+                        err
+                    );
+
+                    showError(
+                        'Server connection failed. Make sure node server.js is running and the backend is reachable.'
+                    );
+
+                } finally {
+
+                    btn.disabled = false;
+
+                    btn.innerText = 'Sign In';
+
+                }
+
+            });
+
+
+        function showError(msg) {
+
+            const errorEl =
+                document.getElementById('login-error');
+
+            errorEl.innerText = msg;
+
+            errorEl.style.display = 'block';
+
+        }
+
+
+        // ============================================================
+        // START SESSION
+        // ============================================================
+
+        async function startSession() {
+
+            const subject =
+                document.getElementById('subject').value;
+
+            const classId =
+                document.getElementById('class-id').value;
+
+
+            if (!teacherData?.id) {
+
+                alert(
+                    'Teacher is not logged in.'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Make sure Socket.IO is connected BEFORE asking the
+             * backend to create the session.
+             */
+            const socketReady =
+                await waitForSocketConnection();
+
+            if (!socketReady) {
+
+                alert(
+                    'WebSocket connection failed. Make sure the backend is running and your device is connected to the same Wi-Fi.'
+                );
+
+                return;
+
+            }
+
+
+            const startButton =
+                document.getElementById('btn-start');
+
+            startButton.disabled = true;
+            startButton.innerText = 'Starting...';
+
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/session/end`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionId: sessionIdToEnd })
-                });
 
-                const data = await response.json();
-                console.log('Session end response:', data);
+                const response =
+                    await fetch(
+                        `${BACKEND_URL}/api/session/start`,
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type':
+                                    'application/json'
+                            },
+
+                            body: JSON.stringify({
+                                teacherId:
+                                    teacherData.id,
+
+                                subject,
+
+                                classId
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    'Session start response:',
+                    data
+                );
+
+
+                if (
+                    response.ok &&
+                    data.success === true
+                ) {
+
+                    currentSessionId =
+                        data.sessionId;
+
+
+                    resetAttendanceList();
+
+                    resetThreatList();
+
+                    toggleSessionState(true);
+
+                    clearQR();
+
+                    startTimer();
+
+
+                    /*
+                     * If your backend returns the first token directly
+                     * in the session-start response, display it too.
+                     * This prevents waiting for the socket event.
+                     */
+                    const firstToken =
+                        data.token ||
+                        data.qrToken;
+
+                    if (firstToken) {
+
+                        renderQRCode(
+                            JSON.stringify({
+                                token: firstToken
+                            })
+                        );
+
+                        resetCountdown();
+
+                    }
+
+                    await syncLiveDashboard();
+
+                } else {
+
+                    alert(
+                        'Failed to start session: ' +
+                        (
+                            data.message ||
+                            'Unknown error'
+                        )
+                    );
+
+                }
+
             } catch (err) {
-                console.error('Failed to end session:', err);
+
+                console.error(
+                    'Session start failed:',
+                    err
+                );
+
+                alert(
+                    'Server connection failed. Make sure node server.js is running and reachable at ' +
+                    BACKEND_URL
+                );
+
             } finally {
-                toggleSessionState(false);
-                stopTimer();
-                clearQR();
-                currentSessionId = null;
+
+                startButton.disabled = false;
+
+                if (!currentSessionId) {
+                    startButton.innerText = 'Start Session';
+                }
+
             }
+
         }
 
-        // State & UI Toggle
+
+        // ============================================================
+        // END SESSION
+        // ============================================================
+
+        async function endSession() {
+
+            if (!currentSessionId) {
+                return;
+            }
+
+
+            const sessionIdToEnd =
+                currentSessionId;
+
+
+            const endButton =
+                document.getElementById('btn-end');
+
+            endButton.disabled = true;
+            endButton.innerText = 'Ending...';
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${BACKEND_URL}/api/session/end`,
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type':
+                                    'application/json'
+                            },
+
+                            body: JSON.stringify({
+                                sessionId:
+                                    sessionIdToEnd
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    'Session end response:',
+                    data
+                );
+
+
+            } catch (err) {
+
+                console.error(
+                    'Failed to end session:',
+                    err
+                );
+
+            } finally {
+
+                toggleSessionState(false);
+
+                stopTimer();
+
+                clearQR();
+
+                currentSessionId = null;
+
+                endButton.disabled = false;
+                endButton.innerText = 'End Session';
+
+            }
+
+        }
+
+
+        // ============================================================
+        // SESSION UI STATE
+        // ============================================================
+
         function toggleSessionState(isLive) {
-            document.getElementById('btn-start').style.display = isLive ? 'none' : 'block';
-            document.getElementById('btn-end').style.display = isLive ? 'block' : 'none';
-            document.getElementById('subject').disabled = isLive;
-            document.getElementById('class-id').disabled = isLive;
-            document.getElementById('timer-box').style.visibility = isLive ? 'visible' : 'hidden';
+
+            document
+                .getElementById('btn-start')
+                .style.display =
+                isLive
+                    ? 'none'
+                    : 'block';
+
+
+            document
+                .getElementById('btn-end')
+                .style.display =
+                isLive
+                    ? 'block'
+                    : 'none';
+
+
+            document
+                .getElementById('subject')
+                .disabled = isLive;
+
+
+            document
+                .getElementById('class-id')
+                .disabled = isLive;
+
+
+            document
+                .getElementById('timer-box')
+                .style.visibility =
+                isLive
+                    ? 'visible'
+                    : 'hidden';
+
         }
 
-        // QR rendering
+
+        // ============================================================
+        // QR CODE
+        // ============================================================
+
         function renderQRCode(value) {
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            qrContainer.classList.remove('qr-placeholder');
 
-            qrcodeObj = new QRCode(qrContainer, {
-                text: value,
-                width: 248,
-                height: 248,
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            const qrContainer =
+                document.getElementById('qrcode');
+
+
+            qrContainer.innerHTML = '';
+
+            qrContainer.classList.remove(
+                'qr-placeholder'
+            );
+
+
+            qrcodeObj =
+                new QRCode(
+                    qrContainer,
+                    {
+                        text: value,
+
+                        width: 248,
+
+                        height: 248,
+
+                        correctLevel:
+                            QRCode.CorrectLevel.M
+                    }
+                );
+
         }
+
 
         function clearQR() {
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = 'Start a session to generate dynamic QR code';
-            qrContainer.classList.add('qr-placeholder');
+
+            const qrContainer =
+                document.getElementById('qrcode');
+
+
+            qrContainer.innerHTML =
+                'Start a session to generate dynamic QR code';
+
+
+            qrContainer.classList.add(
+                'qr-placeholder'
+            );
+
+
             qrcodeObj = null;
+
         }
 
-        // Timer
+
+        // ============================================================
+        // TIMER
+        // ============================================================
+
         function startTimer() {
+
             stopTimer();
+
             countdown = 15;
+
             updateCountdown();
 
-            timerInterval = setInterval(() => {
-                countdown--;
-                if (countdown <= 0) {
-                    countdown = 15;
-                }
-                updateCountdown();
-            }, 1000);
+
+            timerInterval =
+                setInterval(() => {
+
+                    countdown--;
+
+
+                    if (countdown <= 0) {
+                        countdown = 15;
+                    }
+
+
+                    updateCountdown();
+
+                }, 1000);
+
         }
+
 
         function resetCountdown() {
+
             countdown = 15;
+
             updateCountdown();
+
         }
+
 
         function updateCountdown() {
-            document.getElementById('timer-count').innerText = countdown;
+
+            document
+                .getElementById('timer-count')
+                .innerText = countdown;
+
         }
+
 
         function stopTimer() {
+
             if (timerInterval) {
-                clearInterval(timerInterval);
+
+                clearInterval(
+                    timerInterval
+                );
+
                 timerInterval = null;
+
             }
+
         }
 
-        // Live attendance list
-        function addStudentToList(studentName, pointsDelta) {
-            const list = document.getElementById('attendance-list');
-            const empty = document.getElementById('attendance-empty');
 
-            if (empty) empty.style.display = 'none';
+        // ============================================================
+        // RESET ATTENDANCE LIST
+        // ============================================================
 
-            const item = document.createElement('div');
-            item.className = 'student-item';
+        function resetAttendanceList() {
 
-            const deltaText = Number(pointsDelta) > 0
-                ? `+${pointsDelta}`
-                : `${pointsDelta ?? 0}`;
+            const list =
+                document.getElementById(
+                    'attendance-list'
+                );
 
-            item.innerHTML = `
-                <span class="student-name">${escapeHtml(studentName)}</span>
-                <span class="credibility-score">${escapeHtml(deltaText)} pts</span>
+
+            list.innerHTML = `
+                <div
+                    class="empty-state"
+                    id="attendance-empty"
+                >
+                    No students marked present yet
+                </div>
             `;
 
+
+            presentCount = 0;
+
+            markedStudents.clear();
+
+
+            document
+                .getElementById('total-count')
+                .innerText = '0';
+
+        }
+
+
+        // ============================================================
+        // RESET THREAT LIST
+        // ============================================================
+
+        function resetThreatList() {
+
+            const list =
+                document.getElementById(
+                    'threats-list'
+                );
+
+
+            list.innerHTML = `
+                <div
+                    class="empty-state"
+                    id="threats-empty"
+                >
+                    No security alerts detected
+                </div>
+            `;
+
+        }
+
+
+        // ============================================================
+        // LIVE ATTENDANCE
+        // ============================================================
+
+        function addStudentToList(
+            studentName,
+            pointsDelta
+        ) {
+
+            const list =
+                document.getElementById(
+                    'attendance-list'
+                );
+
+
+            const empty =
+                document.getElementById(
+                    'attendance-empty'
+                );
+
+
+            if (empty) {
+                empty.style.display = 'none';
+            }
+
+
+            const item =
+                document.createElement('div');
+
+
+            item.className =
+                'student-item';
+
+
+            const deltaText =
+                Number(pointsDelta) > 0
+                    ? `+${pointsDelta}`
+                    : `${pointsDelta ?? 0}`;
+
+
+            item.innerHTML = `
+                <span class="student-name">
+                    ${escapeHtml(studentName)}
+                </span>
+
+                <span class="credibility-score">
+                    ${escapeHtml(deltaText)} pts
+                </span>
+            `;
+
+
             list.prepend(item);
+
+
             presentCount++;
-            document.getElementById('total-count').innerText = presentCount;
+
+
+            document
+                .getElementById('total-count')
+                .innerText = presentCount;
+
         }
 
-        // Threat alerts
-        function addThreatAlert(studentName, reason) {
-            const list = document.getElementById('threats-list');
-            const empty = document.getElementById('threats-empty');
 
-            if (empty) empty.style.display = 'none';
+        // ============================================================
+        // THREAT ALERTS
+        // ============================================================
 
-            const item = document.createElement('div');
-            item.className = 'threat-item';
+        function addThreatAlert(
+            studentName,
+            reason
+        ) {
+
+            const list =
+                document.getElementById(
+                    'threats-list'
+                );
+
+
+            const empty =
+                document.getElementById(
+                    'threats-empty'
+                );
+
+
+            if (empty) {
+                empty.style.display = 'none';
+            }
+
+
+            const item =
+                document.createElement('div');
+
+
+            item.className =
+                'threat-item';
+
+
             item.innerHTML = `
-                <div class="threat-title">${escapeHtml(studentName)}</div>
-                <div class="threat-desc">${escapeHtml(reason)}</div>
+                <div class="threat-title">
+                    ${escapeHtml(studentName)}
+                </div>
+
+                <div class="threat-desc">
+                    ${escapeHtml(reason)}
+                </div>
             `;
 
+
             list.prepend(item);
+
         }
+
+
+        // ============================================================
+        // HTML ESCAPING
+        // ============================================================
 
         function escapeHtml(value) {
+
             return String(value ?? '')
                 .replaceAll('&', '&amp;')
                 .replaceAll('<', '&lt;')
                 .replaceAll('>', '&gt;')
                 .replaceAll('"', '&quot;')
                 .replaceAll("'", '&#039;');
+
         }
+
     </script>
+
 </body>
 </html>
