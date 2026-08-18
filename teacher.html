@@ -600,7 +600,7 @@
          */
 
         const LOCAL_BACKEND_URL = 'http://localhost:3000';
-        const LAN_BACKEND_HOST = '10.130.152.50';
+        const LAN_BACKEND_HOST = '192.168.33.11';
         const PRODUCTION_BACKEND_URL = 'https://attendx-backend-om12.onrender.com';
 
         function resolveBackendUrl() {
@@ -610,8 +610,6 @@
             }
 
             const host = window.location.hostname;
-            const protocol =
-                window.location.protocol === 'https:' ? 'https:' : 'http:';
 
             if (host === 'localhost' || host === '127.0.0.1') {
                 return LOCAL_BACKEND_URL;
@@ -621,11 +619,12 @@
                 return `http://${LAN_BACKEND_HOST}:3000`;
             }
 
-            if (PRODUCTION_BACKEND_URL) {
-                return PRODUCTION_BACKEND_URL.replace(/\/$/, '');
+            if (host === LAN_BACKEND_HOST) {
+                return `http://${LAN_BACKEND_HOST}:3000`;
             }
 
-            return `${protocol}//${host}:3000`;
+            // Any hosted origin (Vercel, custom domain, etc.) uses Render.
+            return PRODUCTION_BACKEND_URL.replace(/\/$/, '');
         }
 
         const BACKEND_URL = resolveBackendUrl();
