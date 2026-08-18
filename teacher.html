@@ -191,6 +191,7 @@
             display: flex;
             gap: 16px;
             align-items: flex-end;
+            flex-wrap: wrap;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
@@ -490,6 +491,33 @@
                         style="width: auto; padding: 12px 24px; display: none;"
                     >
                         End Session
+                    </button>
+
+                    <button
+                        class="btn"
+                        id="btn-attendance-report"
+                        onclick="generateAttendanceReport()"
+                        style="width: auto; padding: 12px 20px;"
+                    >
+                        Attendance Report
+                    </button>
+
+                    <button
+                        class="btn"
+                        id="btn-student-report"
+                        onclick="generateStudentReport()"
+                        style="width: auto; padding: 12px 20px;"
+                    >
+                        Student Report
+                    </button>
+
+                    <button
+                        class="btn"
+                        id="btn-behaviour-report"
+                        onclick="generateStudentBehaviourReport()"
+                        style="width: auto; padding: 12px 20px;"
+                    >
+                        Student Behaviour
                     </button>
 
                 </div>
@@ -1663,6 +1691,160 @@
 
             list.prepend(item);
 
+        }
+
+
+        // ============================================================
+        // REPORTS
+        // ============================================================
+
+        async function generateAttendanceReport() {
+            if (!teacherData?.id) {
+                alert('Teacher is not logged in.');
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${BACKEND_URL}/api/reports/attendance?teacherId=${encodeURIComponent(teacherData.id)}`,
+                    { cache: 'no-store' }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.message || 'Failed to generate attendance report.');
+                    return;
+                }
+
+                downloadCSV(
+                    data.report,
+                    'AttendX_Overall_Attendance_Report.csv'
+                );
+            } catch (error) {
+                console.error('Attendance report error:', error);
+                alert('Failed to generate attendance report.');
+            }
+        }
+
+
+        async function generateStudentReport() {
+            if (!teacherData?.id) {
+                alert('Teacher is not logged in.');
+                return;
+            }
+
+            const studentId = prompt('Enter Student ID for the report:');
+
+            if (!studentId) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${BACKEND_URL}/api/reports/student?teacherId=${encodeURIComponent(teacherData.id)}&studentId=${encodeURIComponent(studentId.trim())}`,
+                    { cache: 'no-store' }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.message || 'Failed to generate student report.');
+                    return;
+                }
+
+                downloadCSV(
+                    data.report,
+                    `AttendX_Student_${studentId.trim()}_Report.csv`
+                );
+            } catch (error) {
+                console.error('Student report error:', error);
+                alert('Failed to generate student report.');
+            }
+        }
+
+
+        async function generateStudentBehaviourReport() {
+            if (!teacherData?.id) {
+                alert('Teacher is not logged in.');
+                return;
+            }
+
+            const studentId = prompt('Enter Student ID for the behaviour report:');
+
+            if (!studentId) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${BACKEND_URL}/api/reports/student-behaviour?teacherId=${encodeURIComponent(teacherData.id)}&studentId=${encodeURIComponent(studentId.trim())}`,
+                    { cache: 'no-store' }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.message || 'Failed to generate student behaviour report.');
+                    return;
+                }
+
+                downloadCSV(
+                    data.report,
+                    `AttendX_Student_${studentId.trim()}_Behaviour_Report.csv`
+                );
+            } catch (error) {
+                console.error('Student behaviour report error:', error);
+                alert('Failed to generate student behaviour report.');
+            }
+        }
+
+
+        function downloadCSV(rows, filename) {
+            if (!Array.isArray(rows) || rows.length === 0) {
+                alert('No data available for this report.');
+                return;
+            }
+
+            const headers = Object.keys(rows[0]);
+
+            const csvCell = (value) => {
+                if (value === null || value === undefined) {
+                    return '';
+                }
+
+                let text = String(value);
+
+                // Avoid common spreadsheet formula injection when a field
+                // begins with a formula/control character.
+                if (/^[=+\-@]/.test(text)) {
+                    text = `'${text}`;
+                }
+
+                return `"${text.replace(/"/g, '""')}"`;
+            };
+
+            const csv = [
+                headers.map(csvCell).join(','),
+                ...rows.map(row =>
+                    headers.map(header => csvCell(row[header])).join(',')
+                )
+            ].join('\r\n');
+
+            const blob = new Blob(
+                ['\uFEFF' + csv],
+                { type: 'text/csv;charset=utf-8;' }
+            );
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
 
