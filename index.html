@@ -16,6 +16,8 @@
    ATTENDX // LEDGER SEAL — verification-console redesign
    Visual language: an official register / ink-stamp of record.
    Existing portal destinations & telemetry logic preserved.
+   PERF PATCH: mobile/touch devices get a lighter effects budget
+   (see the "MOBILE PERF OVERRIDES" media query near the bottom).
    ============================================================ */
 
       :root {
@@ -1135,6 +1137,57 @@
           flex-direction: column;
         }
       }
+
+      /* ============================================================
+   MOBILE / TOUCH PERF OVERRIDES
+   Everything here strips the GPU-heavy effects (blur, backdrop-filter,
+   mix-blend-mode, long-distance box-shadows) that desktop can absorb
+   but phone GPUs can't. Applies to touch devices AND small screens,
+   since some tablets/foldables report pointer:fine but still choke.
+   ============================================================ */
+      @media (pointer: coarse), (max-width: 700px) {
+        /* full-screen SVG turbulence + mix-blend is the single most
+           expensive layer on the page for mobile compositors */
+        .noise {
+          display: none;
+        }
+
+        /* cut blur radius hard — 84px blur = huge offscreen buffer */
+        .light {
+          filter: blur(36px);
+          opacity: 0.16;
+        }
+
+        /* backdrop-filter forces a full-screen backdrop capture per
+           element per frame on mobile Safari/Chrome — swap for a
+           plain translucent fill, visually close enough */
+        .terminal-chip,
+        .feature {
+          backdrop-filter: none;
+          background: rgba(16, 27, 21, 0.82);
+        }
+
+        /* dial down the always-on infinite animations instead of
+           removing them outright, so it still feels alive */
+        .orbit {
+          animation-duration: 70s;
+        }
+        .seal svg {
+          animation-duration: 55s;
+        }
+        .console::before,
+        .signal {
+          animation: none;
+          opacity: 0;
+        }
+
+        /* scan-grid mask-image is recomputed on paint; fine as a
+           faint static layer, not worth the mask cost at full opacity */
+        .scan-grid {
+          opacity: 0.12;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -1379,15 +1432,23 @@
     <script>
       /* ============================================================
    Dynamic visual system — no application/backend dependencies.
+   PERF PATCH: mobile/touch gets fewer particles, no shadowBlur,
+   lower devicePixelRatio cap, and no pointer-tracking listeners.
+   The rAF loop also pauses when the tab isn't visible.
    ============================================================ */
+
+      const isMobile =
+        window.matchMedia("(pointer: coarse)").matches ||
+        window.innerWidth < 700;
 
       const canvas = document.getElementById("space");
       const ctx = canvas.getContext("2d");
 
       let w = 0;
       let h = 0;
-      let dpr = Math.min(window.devicePixelRatio || 1, 2);
+      let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
       let particles = [];
+      let rafId = null;
 
       function resizeCanvas() {
         w = window.innerWidth;
@@ -1400,7 +1461,10 @@
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const count = Math.min(120, Math.max(48, Math.floor((w * h) / 12000)));
+        const divisor = isMobile ? 32000 : 12000;
+        const cap = isMobile ? 34 : 120;
+        const floor = isMobile ? 18 : 48;
+        const count = Math.min(cap, Math.max(floor, Math.floor((w * h) / divisor)));
 
         particles = Array.from({ length: count }, () => ({
           x: Math.random() * w,
@@ -1427,23 +1491,40 @@
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          // shadowBlur removed: it was the single biggest cost in this
+          // loop (per-particle blur, every frame). Plain fill keeps the
+          // same warm-dot look without the recompute.
           ctx.fillStyle = `hsla(${p.hue},72%,62%,${p.a})`;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = `hsla(${p.hue},72%,58%,.5)`;
           ctx.fill();
         }
 
-        ctx.shadowBlur = 0;
-        requestAnimationFrame(drawSpace);
+        rafId = requestAnimationFrame(drawSpace);
+      }
+
+      function startLoop() {
+        if (rafId === null) rafId = requestAnimationFrame(drawSpace);
+      }
+      function stopLoop() {
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
       }
 
       resizeCanvas();
-      drawSpace();
+      startLoop();
       window.addEventListener("resize", resizeCanvas);
 
-      /* cursor-reactive background lighting */
-      const cursorGlow = document.createElement("div");
-      cursorGlow.style.cssText = `
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopLoop();
+        else startLoop();
+      });
+
+      /* cursor-reactive background lighting — desktop only, mousemove
+         on touch devices is either absent or synthetic/noisy */
+      if (!isMobile) {
+        const cursorGlow = document.createElement("div");
+        cursorGlow.style.cssText = `
     position:fixed;
     width:420px;
     height:420px;
@@ -1453,56 +1534,71 @@
     transform:translate(-50%,-50%);
     background:radial-gradient(circle,rgba(201,162,39,.09),rgba(154,51,36,.03) 35%,transparent 68%);
 `;
-      document.body.appendChild(cursorGlow);
+        document.body.appendChild(cursorGlow);
 
-      const lights = document.querySelectorAll(".light");
+        const lights = document.querySelectorAll(".light");
 
-      document.addEventListener("mousemove", (e) => {
-        cursorGlow.style.left = `${e.clientX}px`;
-        cursorGlow.style.top = `${e.clientY}px`;
+        document.addEventListener("mousemove", (e) => {
+          cursorGlow.style.left = `${e.clientX}px`;
+          cursorGlow.style.top = `${e.clientY}px`;
 
-        const nx = (e.clientX / innerWidth - 0.5) * 2;
-        const ny = (e.clientY / innerHeight - 0.5) * 2;
+          const nx = (e.clientX / innerWidth - 0.5) * 2;
+          const ny = (e.clientY / innerHeight - 0.5) * 2;
 
-        lights.forEach((light, i) => {
-          const factor = (i + 1) * 11;
-          light.style.transform = `translate3d(${nx * factor}px,${ny * factor}px,0)`;
-        });
-      });
-
-      /* Portal-card 3D tilt */
-      document.querySelectorAll(".portal").forEach((card) => {
-        card.addEventListener("mousemove", (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-
-          card.style.setProperty("--gx", `${(x / rect.width) * 100}%`);
-          card.style.setProperty("--gy", `${(y / rect.height) * 100}%`);
-
-          const rx = ((y - rect.height / 2) / (rect.height / 2)) * -6;
-          const ry = ((x - rect.width / 2) / (rect.width / 2)) * 7;
-
-          card.style.transform = `perspective(1300px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px) scale(1.018)`;
+          lights.forEach((light, i) => {
+            const factor = (i + 1) * 11;
+            light.style.transform = `translate3d(${nx * factor}px,${ny * factor}px,0)`;
+          });
         });
 
-        card.addEventListener("mouseleave", () => {
-          card.style.transform =
-            "perspective(1300px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)";
+        /* Portal-card 3D tilt */
+        document.querySelectorAll(".portal").forEach((card) => {
+          card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty("--gx", `${(x / rect.width) * 100}%`);
+            card.style.setProperty("--gy", `${(y / rect.height) * 100}%`);
+
+            const rx = ((y - rect.height / 2) / (rect.height / 2)) * -6;
+            const ry = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+            card.style.transform = `perspective(1300px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px) scale(1.018)`;
+          });
+
+          card.addEventListener("mouseleave", () => {
+            card.style.transform =
+              "perspective(1300px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)";
+          });
         });
-      });
 
-      /* Command-console 3D response */
-      const consoleEl = document.getElementById("console");
+        /* Command-console 3D response */
+        const consoleEl = document.getElementById("console");
 
-      document.addEventListener("mousemove", (e) => {
-        if (!consoleEl || "ontouchstart" in window) return;
+        document.addEventListener("mousemove", (e) => {
+          if (!consoleEl) return;
 
-        const nx = e.clientX / innerWidth - 0.5;
-        const ny = e.clientY / innerHeight - 0.5;
+          const nx = e.clientX / innerWidth - 0.5;
+          const ny = e.clientY / innerHeight - 0.5;
 
-        consoleEl.style.transform = `perspective(1300px) rotateY(${nx * 4.2}deg) rotateX(${ny * -3.3}deg)`;
-      });
+          consoleEl.style.transform = `perspective(1300px) rotateY(${nx * 4.2}deg) rotateX(${ny * -3.3}deg)`;
+        });
+
+        document.addEventListener("mouseleave", () => {
+          if (consoleEl) {
+            consoleEl.style.transform =
+              "perspective(1300px) rotateY(0deg) rotateX(0deg)";
+          }
+        });
+      } else {
+        /* make sure no leftover inline transforms confuse layout on touch */
+        document.querySelectorAll(".portal").forEach((el) => {
+          el.style.transform = "none";
+        });
+        const consoleEl = document.getElementById("console");
+        if (consoleEl) consoleEl.style.transform = "none";
+      }
 
       /* Fake telemetry is purely decorative and does not touch backend data. */
       const presentEl = document.getElementById("present");
@@ -1514,39 +1610,26 @@
       let present = 48;
       let alerts = 2;
 
-      setInterval(() => {
-        if (Math.random() > 0.63) present += 1;
-        if (Math.random() > 0.88) alerts = Math.min(5, alerts + 1);
+      setInterval(
+        () => {
+          if (Math.random() > 0.63) present += 1;
+          if (Math.random() > 0.88) alerts = Math.min(5, alerts + 1);
 
-        const verified = Math.max(0, present - Math.max(0, alerts - 1));
+          const verified = Math.max(0, present - Math.max(0, alerts - 1));
 
-        const integrity = Math.min(
-          99,
-          Math.max(82, Math.round((verified / Math.max(present, 1)) * 100)),
-        );
+          const integrity = Math.min(
+            99,
+            Math.max(82, Math.round((verified / Math.max(present, 1)) * 100)),
+          );
 
-        presentEl.textContent = present;
-        alertsEl.textContent = String(alerts).padStart(2, "0");
-        verifiedEl.textContent = verified;
-        integrityEl.textContent = integrity + "%";
-        meterFill.style.width = integrity + "%";
-      }, 3600);
-
-      /* Reset decorative tilt on leaving page */
-      document.addEventListener("mouseleave", () => {
-        if (consoleEl) {
-          consoleEl.style.transform =
-            "perspective(1300px) rotateY(0deg) rotateX(0deg)";
-        }
-      });
-
-      /* Respect reduced motion / touch interaction */
-      if ("ontouchstart" in window) {
-        document.querySelectorAll(".portal").forEach((el) => {
-          el.style.transform = "none";
-        });
-        if (consoleEl) consoleEl.style.transform = "none";
-      }
+          presentEl.textContent = present;
+          alertsEl.textContent = String(alerts).padStart(2, "0");
+          verifiedEl.textContent = verified;
+          integrityEl.textContent = integrity + "%";
+          meterFill.style.width = integrity + "%";
+        },
+        isMobile ? 5200 : 3600,
+      );
     </script>
   </body>
 </html>
