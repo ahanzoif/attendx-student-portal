@@ -1,1567 +1,2860 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AttendX — Smart Attendance System</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560;9..144,650&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttendX — Smart Classroom Attendance Management Platform</title>
+  <meta name="description" content="AttendX combines dynamic QR attendance, classroom verification and real-time monitoring into one secure, modern attendance platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* AttendX Modern Light SaaS Design System */
+:root {
+  /* Color System */
+  --bg-primary: #F8FAFC;
+  --surface-white: #FFFFFF;
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  --primary-border: #BFDBFE;
+  
+  --text-main: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  
+  --border-color: #E2E8F0;
+  --border-light: #F1F5F9;
+  
+  --success: #16A34A;
+  --success-bg: #DCFCE7;
+  --success-border: #86EFAC;
+  
+  --warning: #D97706;
+  --warning-bg: #FEF3C7;
+  --warning-border: #FCD34D;
+  
+  --danger: #DC2626;
+  --danger-bg: #FEE2E2;
+  --danger-border: #FCA5A5;
+  
+  /* Typography & Sizing */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 16px rgba(15, 23, 42, 0.04);
+  --shadow-float: 0 12px 30px -4px rgba(37, 99, 235, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
 
-    <style>
-      /* ============================================================
-   ATTENDX // LEDGER SEAL — verification-console redesign
-   Visual language: an official register / ink-stamp of record.
-   Existing portal destinations & telemetry logic preserved.
-   PERF PATCH: mobile/touch devices get a lighter effects budget
-   (see the "MOBILE PERF OVERRIDES" media query near the bottom).
-   ============================================================ */
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-      :root {
-        /* -- token system --------------------------------------- */
-        --bg: #101b15; /* deep moss ink, not a flat black   */
-        --bg2: #0b140f;
-        --ink: #f3ecdd; /* warm parchment ink, not pure white*/
-        --muted: #a2b09d;
-        --muted2: #6e7c6c;
-        --brass: #c9a227; /* primary — stamped brass            */
-        --brass2: #e8c468;
-        --oxblood: #9a3324; /* secondary — registrar's red ink    */
-        --sage: #7fa37a; /* verified / success                 */
-        --parchment: #efe6d3; /* used sparingly, as paper card       */
-        --panel: rgba(20, 29, 22, 0.76);
-        --panel2: rgba(26, 37, 28, 0.8);
-        --line: rgba(243, 236, 221, 0.11);
-        --line2: rgba(243, 236, 221, 0.19);
-        --shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-        --font-display: "Fraunces", Georgia, serif;
-        --font-mono:
-          "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-        --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
-      }
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--text-main);
+  background-color: var(--bg-primary);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: var(--font-body);
-      }
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  line-height: 1.5;
+}
 
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        min-height: 100vh;
-        overflow-x: hidden;
-        color: var(--ink);
-        background:
-          radial-gradient(
-            circle at 16% 10%,
-            rgba(201, 162, 39, 0.1),
-            transparent 26%
-          ),
-          radial-gradient(
-            circle at 82% 14%,
-            rgba(154, 51, 36, 0.08),
-            transparent 24%
-          ),
-          radial-gradient(
-            circle at 60% 82%,
-            rgba(127, 163, 122, 0.07),
-            transparent 24%
-          ),
-          linear-gradient(150deg, var(--bg), var(--bg2) 60%, #08110c);
-      }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-      button,
-      a {
-        -webkit-tap-highlight-color: transparent;
-      }
-      a {
-        color: inherit;
-      }
+img, svg {
+  display: block;
+  max-width: 100%;
+}
 
-      a:focus-visible,
-      button:focus-visible {
-        outline: 2px solid var(--brass2);
-        outline-offset: 3px;
-        border-radius: 6px;
-      }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
 
-      #space {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -10;
-      }
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-      .scan-grid {
-        position: fixed;
-        inset: 0;
-        z-index: -8;
-        pointer-events: none;
-        opacity: 0.28;
-        background:
-          linear-gradient(rgba(243, 236, 221, 0.035) 1px, transparent 1px),
-          linear-gradient(
-            90deg,
-            rgba(243, 236, 221, 0.035) 1px,
-            transparent 1px
-          );
-        background-size: 52px 52px;
-        mask-image: radial-gradient(
-          circle at center,
-          black 12%,
-          transparent 82%
-        );
-      }
+.text-primary {
+  color: var(--primary);
+}
 
-      .noise {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 40;
-        opacity: 0.035;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
-        mix-blend-mode: screen;
-      }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
-      /* ---------- animated light pools ---------- */
-      .light {
-        position: fixed;
-        width: 430px;
-        height: 430px;
-        border-radius: 50%;
-        filter: blur(84px);
-        pointer-events: none;
-        z-index: -6;
-        opacity: 0.3;
-        transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
-      .light.a {
-        left: -170px;
-        top: -130px;
-        background: rgba(201, 162, 39, 0.2);
-      }
-      .light.b {
-        right: -170px;
-        top: 25%;
-        background: rgba(154, 51, 36, 0.14);
-      }
-      .light.c {
-        left: 36%;
-        bottom: -220px;
-        background: rgba(127, 163, 122, 0.14);
-      }
+.badge-primary {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
 
-      /* ---------- animations ---------- */
-      @keyframes rise {
-        from {
-          opacity: 0;
-          transform: translateY(28px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @keyframes pulse {
-        0% {
-          box-shadow: 0 0 0 0 rgba(127, 163, 122, 0.55);
-        }
-        70% {
-          box-shadow: 0 0 0 11px rgba(127, 163, 122, 0);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(127, 163, 122, 0);
-        }
-      }
-      @keyframes orbit {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes orbitSlow {
-        to {
-          transform: rotate(-360deg);
-        }
-      }
-      @keyframes sweep {
-        0% {
-          transform: translateX(-140%);
-        }
-        100% {
-          transform: translateX(140%);
-        }
-      }
-      @keyframes inkShift {
-        0%,
-        100% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-      }
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
 
-      /* ---------- top bar ---------- */
-      nav {
-        width: min(1280px, calc(100% - 40px));
-        margin: 0 auto;
-        padding: 20px 0 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        z-index: 20;
-        animation: rise 0.8s ease-out both;
-      }
+.badge-dot.pulse {
+  box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+  animation: pulse-ring 2s infinite;
+}
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        text-decoration: none;
-      }
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
 
-      .logo-mark {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-family: var(--font-display);
-        font-weight: 650;
-        font-size: 1.2rem;
-        color: #12200f;
-        background: radial-gradient(
-          circle at 32% 28%,
-          var(--brass2),
-          var(--brass) 68%
-        );
-        border: 1px solid rgba(232, 196, 104, 0.5);
-        box-shadow:
-          0 0 0 4px rgba(201, 162, 39, 0.08),
-          inset 0 1px 0 rgba(255, 255, 255, 0.35);
-        position: relative;
-      }
+.badge-success {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
 
-      .brand-text {
-        font-family: var(--font-display);
-        font-size: 1.5rem;
-        font-weight: 560;
-        letter-spacing: -0.5px;
-      }
-      .brand-text span {
-        color: var(--oxblood);
-      }
+.badge-warning {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
 
-      .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-      }
-      .terminal-chip {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 12px;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: rgba(16, 27, 21, 0.6);
-        backdrop-filter: blur(18px);
-        color: #b8c2b3;
-        font-family: var(--font-mono);
-        font-size: 0.68rem;
-        letter-spacing: 0.4px;
-      }
-      .pulse-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--sage);
-        animation: pulse 2s infinite;
-      }
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.25;
+}
 
-      /* ---------- hero layout ---------- */
-      .hero {
-        width: min(1280px, calc(100% - 40px));
-        min-height: calc(100vh - 72px);
-        margin: 0 auto;
-        padding: 55px 0 55px;
-        display: grid;
-        grid-template-columns: minmax(0, 1.02fr) minmax(420px, 0.98fr);
-        gap: 55px;
-        align-items: center;
-      }
+.btn-primary {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), 0 2px 4px rgba(37, 99, 235, 0.15);
+}
 
-      .copy {
-        position: relative;
-        z-index: 6;
-      }
-      .overline {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 11px;
-        border: 1px solid rgba(201, 162, 39, 0.28);
-        background: rgba(201, 162, 39, 0.06);
-        color: var(--brass2);
-        border-radius: 3px;
-        text-transform: uppercase;
-        letter-spacing: 1.6px;
-        font-family: var(--font-mono);
-        font-size: 0.64rem;
-        font-weight: 500;
-        animation: rise 0.75s 0.07s ease-out both;
-      }
-      .overline b {
-        color: var(--oxblood);
-        font-weight: 700;
-      }
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.3), 0 4px 8px rgba(29, 78, 216, 0.2);
+  transform: translateY(-1px);
+}
 
-      h1 {
-        margin-top: 22px;
-        max-width: 820px;
-        font-family: var(--font-display);
-        font-size: clamp(3.2rem, 6.6vw, 6.4rem);
-        line-height: 0.96;
-        letter-spacing: -2px;
-        font-weight: 560;
-        animation: rise 0.8s 0.14s ease-out both;
-      }
-      h1 .line2 {
-        display: block;
-        margin-left: 6px;
-        font-style: italic;
-      }
-      h1 .chromatic {
-        background: linear-gradient(
-          100deg,
-          var(--brass2) 0%,
-          var(--brass) 30%,
-          var(--parchment) 52%,
-          var(--oxblood) 74%,
-          var(--brass2) 100%
-        );
-        background-size: 220% 100%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        animation: inkShift 6.5s ease-in-out infinite;
-      }
+.btn-primary:active {
+  transform: translateY(0);
+}
 
-      .lede {
-        max-width: 680px;
-        margin-top: 24px;
-        color: var(--muted);
-        line-height: 1.8;
-        font-size: 1.02rem;
-        animation: rise 0.8s 0.22s ease-out both;
-      }
-      .lede strong {
-        color: var(--ink);
-        font-weight: 600;
-      }
+.btn-secondary {
+  background-color: var(--surface-white);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-xs);
+}
 
-      .badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 9px;
-        margin-top: 24px;
-        animation: rise 0.8s 0.29s ease-out both;
-      }
-      .badge {
-        padding: 8px 11px;
-        border-radius: 3px;
-        border: 1px solid var(--line);
-        background: rgba(243, 236, 221, 0.025);
-        color: #b9c3b3;
-        font-family: var(--font-mono);
-        font-size: 0.68rem;
-        font-weight: 500;
-        letter-spacing: 0.3px;
-      }
-      .badge.brass {
-        border-color: rgba(201, 162, 39, 0.3);
-        color: var(--brass2);
-      }
-      .badge.blood {
-        border-color: rgba(154, 51, 36, 0.32);
-        color: #e6a495;
-      }
-      .badge.sage {
-        border-color: rgba(127, 163, 122, 0.3);
-        color: #c3dcbe;
-      }
+.btn-secondary:hover {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  color: var(--text-main);
+  transform: translateY(-1px);
+}
 
-      /* ---------- portal cards ---------- */
-      .portal-grid {
-        margin-top: 34px;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        perspective: 1300px;
-        animation: rise 0.85s 0.34s ease-out both;
-      }
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
 
-      .portal {
-        --gx: 50%;
-        --gy: 50%;
-        position: relative;
-        min-height: 246px;
-        padding: 23px;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        text-decoration: none;
-        overflow: hidden;
-        background: linear-gradient(
-          160deg,
-          rgba(28, 40, 30, 0.88),
-          rgba(11, 17, 12, 0.9)
-        );
-        box-shadow: 0 22px 65px rgba(0, 0, 0, 0.32);
-        transform-style: preserve-3d;
-        transition:
-          transform 170ms ease,
-          border-color 220ms ease,
-          box-shadow 220ms ease;
-      }
-      .portal::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          220px circle at var(--gx) var(--gy),
-          rgba(201, 162, 39, 0.14),
-          transparent 62%
-        );
-        opacity: 0;
-        transition: opacity 220ms;
-      }
-      .portal.blood::before {
-        background: radial-gradient(
-          220px circle at var(--gx) var(--gy),
-          rgba(154, 51, 36, 0.16),
-          transparent 62%
-        );
-      }
-      .portal::after {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        border-radius: 10px;
-        padding: 1px;
-        background: linear-gradient(
-          135deg,
-          rgba(201, 162, 39, 0.45),
-          transparent 34%,
-          transparent 64%,
-          rgba(127, 163, 122, 0.3)
-        );
-        -webkit-mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
+.btn-outline:hover {
+  color: var(--text-main);
+  border-color: #94A3B8;
+  background-color: #FFFFFF;
+}
 
-        mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
+.btn-lg {
+  padding: 13px 26px;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
 
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
+/* Section Header Styles */
+.section-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 56px;
+}
 
-        opacity: 0;
-        transition: opacity 220ms;
-      }
-      .portal.blood::after {
-        background: linear-gradient(
-          135deg,
-          rgba(154, 51, 36, 0.5),
-          transparent 34%,
-          transparent 64%,
-          rgba(201, 162, 39, 0.3)
-        );
-      }
-      .portal:hover {
-        border-color: rgba(243, 236, 221, 0.22);
-        box-shadow:
-          0 32px 80px rgba(0, 0, 0, 0.45),
-          0 0 55px rgba(201, 162, 39, 0.07);
-      }
-      .portal.blood:hover {
-        box-shadow:
-          0 32px 80px rgba(0, 0, 0, 0.45),
-          0 0 55px rgba(154, 51, 36, 0.09);
-      }
-      .portal:hover::before,
-      .portal:hover::after {
-        opacity: 1;
-      }
+.section-tag {
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
 
-      .portal-content {
-        position: relative;
-        z-index: 2;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        transform: translateZ(28px);
-      }
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
+}
 
-      .portal-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .portal-icon {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-size: 1.5rem;
-        background: linear-gradient(
-          145deg,
-          rgba(201, 162, 39, 0.16),
-          rgba(127, 163, 122, 0.07)
-        );
-        border: 1px solid rgba(201, 162, 39, 0.22);
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.08),
-          0 14px 32px rgba(0, 0, 0, 0.25);
-        transition: transform 220ms ease;
-      }
-      .portal.blood .portal-icon {
-        background: linear-gradient(
-          145deg,
-          rgba(154, 51, 36, 0.18),
-          rgba(201, 162, 39, 0.06)
-        );
-        border-color: rgba(154, 51, 36, 0.28);
-      }
-      .portal:hover .portal-icon {
-        transform: translateZ(22px) rotate(-4deg) scale(1.08);
-      }
-      .portal-arrow {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        border: 1px solid var(--line);
-        color: #aab6a5;
-        font-family: var(--font-mono);
-        transition:
-          transform 220ms ease,
-          color 220ms ease,
-          background 220ms ease;
-      }
-      .portal:hover .portal-arrow {
-        transform: translate(4px, -4px) rotate(-8deg);
-        color: var(--ink);
-        background: rgba(243, 236, 221, 0.06);
-      }
-      .portal h2 {
-        margin-top: 22px;
-        font-family: var(--font-display);
-        font-size: 1.5rem;
-        font-weight: 560;
-        letter-spacing: -0.4px;
-      }
-      .portal p {
-        margin-top: 9px;
-        max-width: 320px;
-        color: var(--muted);
-        font-size: 0.87rem;
-        line-height: 1.65;
-      }
-      .portal-meta {
-        margin-top: auto;
-        padding-top: 17px;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: center;
-        color: var(--brass2);
-        font-family: var(--font-mono);
-        font-size: 0.68rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-      }
-      .portal.blood .portal-meta {
-        color: #e6a495;
-      }
+.section-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
 
-      /* ---------- right command console ---------- */
-      .console-wrap {
-        min-height: 650px;
-        display: grid;
-        place-items: center;
-        position: relative;
-        animation: rise 0.95s 0.18s ease-out both;
-      }
-      .orbit {
-        position: absolute;
-        width: 500px;
-        height: 500px;
-        border: 1px dashed rgba(201, 162, 39, 0.16);
-        border-radius: 50%;
-        animation: orbit 34s linear infinite;
-      }
-      .orbit::before,
-      .orbit::after {
-        content: "";
-        position: absolute;
-        border-radius: 50%;
-      }
-      .orbit::before {
-        width: 7px;
-        height: 7px;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--brass2);
-        box-shadow: 0 0 18px rgba(232, 196, 104, 0.7);
-      }
-      .orbit::after {
-        width: 5px;
-        height: 5px;
-        right: 34px;
-        bottom: 76px;
-        background: var(--oxblood);
-        box-shadow: 0 0 16px rgba(154, 51, 36, 0.65);
-      }
+/* ==================================================
+   NAVBAR
+   ================================================== */
+.navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(248, 250, 252, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
 
-      .console {
-        width: min(100%, 500px);
-        border: 1px solid var(--line2);
-        border-radius: 14px;
-        background: linear-gradient(
-          160deg,
-          rgba(24, 34, 26, 0.95),
-          rgba(9, 14, 10, 0.97)
-        );
-        box-shadow:
-          var(--shadow),
-          0 0 80px rgba(201, 162, 39, 0.06);
-        overflow: hidden;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 160ms ease;
-      }
-      .console::before {
-        content: "";
-        position: absolute;
-        left: -25%;
-        top: 0;
-        width: 150%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--brass),
-          var(--oxblood),
-          transparent
-        );
-        box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
-        animation: sweep 5s linear infinite;
-      }
+.navbar-wrapper.scrolled {
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
 
-      .console-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 18px;
-        border-bottom: 1px solid var(--line);
-        background: rgba(243, 236, 221, 0.012);
-      }
-      .console-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .dots {
-        display: flex;
-        gap: 5px;
-      }
-      .dots span {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #33422f;
-      }
-      .console-name {
-        color: #94a08e;
-        font-family: var(--font-mono);
-        font-size: 0.66rem;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        font-weight: 500;
-      }
-      .live {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        color: #bcdab5;
-        font-family: var(--font-mono);
-        font-size: 0.65rem;
-        font-weight: 600;
-      }
-      .live i {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--sage);
-        box-shadow: 0 0 12px rgba(127, 163, 122, 0.6);
-      }
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
 
-      .console-body {
-        padding: 22px;
-      }
-      .console-kicker {
-        color: #7c8977;
-        text-transform: uppercase;
-        letter-spacing: 1.8px;
-        font-family: var(--font-mono);
-        font-size: 0.62rem;
-        font-weight: 500;
-      }
-      .console-title {
-        margin-top: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 12px;
-      }
-      .console-title h3 {
-        font-family: var(--font-display);
-        font-size: 1.55rem;
-        font-weight: 560;
-        letter-spacing: -0.5px;
-      }
-      .session-id {
-        color: #8b9885;
-        font-family: var(--font-mono);
-        font-size: 0.64rem;
-      }
+/* Logo */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+  text-decoration: none;
+}
 
-      .terminal {
-        margin-top: 18px;
-        padding: 13px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        background: rgba(0, 0, 0, 0.24);
-        font-family: var(--font-mono);
-        font-size: 0.67rem;
-        line-height: 1.8;
-      }
-      .term-line {
-        display: flex;
-        gap: 8px;
-      }
-      .term-prompt {
-        color: var(--brass2);
-      }
-      .term-ok {
-        color: var(--sage);
-      }
-      .term-flag {
-        color: #e08d76;
-      }
-      .term-muted {
-        color: #5f6b5a;
-      }
+.logo-symbol {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
+}
 
-      .network {
-        margin-top: 16px;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 9px;
-      }
-      .node {
-        min-height: 78px;
-        padding: 12px;
-        border-radius: 7px;
-        border: 1px solid var(--line);
-        background: rgba(243, 236, 221, 0.02);
-        position: relative;
-        overflow: hidden;
-      }
-      .node small {
-        display: block;
-        color: #748072;
-        text-transform: uppercase;
-        letter-spacing: 1.1px;
-        font-family: var(--font-mono);
-        font-weight: 500;
-        font-size: 0.58rem;
-      }
-      .node strong {
-        display: block;
-        margin-top: 8px;
-        font-family: var(--font-display);
-        font-weight: 560;
-        font-size: 0.94rem;
-      }
-      .node em {
-        display: block;
-        margin-top: 4px;
-        font-style: normal;
-        color: #8f9b8a;
-        font-size: 0.62rem;
-      }
-      .node.active {
-        border-color: rgba(127, 163, 122, 0.22);
-        box-shadow: inset 0 0 22px rgba(127, 163, 122, 0.04);
-      }
+.logo-text {
+  font-weight: 700;
+  color: var(--text-main);
+}
 
-      .signal {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--sage),
-          transparent
-        );
-        transform: translateX(-120%);
-        animation: sweep 2.8s linear infinite;
-      }
+.logo-text span {
+  color: var(--primary);
+}
 
-      .attendance {
-        margin-top: 17px;
-        border-radius: 8px;
-        border: 1px solid var(--line);
-        background: rgba(243, 236, 221, 0.02);
-        padding: 15px;
-      }
-      .attendance-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .attendance-top span {
-        color: #7f8c7a;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        font-family: var(--font-mono);
-        font-size: 0.6rem;
-        font-weight: 500;
-      }
-      .attendance-top b {
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        color: #dbe4d5;
-      }
-      .meter {
-        margin-top: 12px;
-        height: 8px;
-        border-radius: 99px;
-        background: #182319;
-        overflow: hidden;
-        border: 1px solid rgba(243, 236, 221, 0.05);
-      }
-      .meter-fill {
-        width: 87%;
-        height: 100%;
-        border-radius: 99px;
-        background: linear-gradient(
-          90deg,
-          var(--oxblood),
-          var(--brass),
-          var(--sage)
-        );
-        box-shadow: 0 0 18px rgba(201, 162, 39, 0.3);
-        transition: width 0.7s ease;
-      }
-      .mini-metrics {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        margin-top: 11px;
-      }
-      .metric {
-        padding: 10px 11px;
-        border-radius: 6px;
-        background: rgba(243, 236, 221, 0.02);
-        border: 1px solid var(--line);
-      }
-      .metric span {
-        display: block;
-        color: #778472;
-        font-family: var(--font-mono);
-        font-size: 0.58rem;
-        text-transform: uppercase;
-        letter-spacing: 0.9px;
-        font-weight: 500;
-      }
-      .metric strong {
-        display: block;
-        margin-top: 5px;
-        font-family: var(--font-display);
-        font-weight: 560;
-        font-size: 1rem;
-      }
-      .metric.brass strong {
-        color: var(--brass2);
-      }
-      .metric.blood strong {
-        color: #e6a495;
-      }
-      .metric.sage strong {
-        color: #bcdcb6;
-      }
+/* Nav Links */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
 
-      /* ---------- bottom strip ---------- */
-      .features {
-        width: min(1280px, calc(100% - 40px));
-        margin: 0 auto;
-        padding: 0 0 35px;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 11px;
-        animation: rise 0.9s 0.42s ease-out both;
-      }
-      .feature {
-        min-height: 66px;
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 14px 16px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: rgba(243, 236, 221, 0.02);
-        backdrop-filter: blur(12px);
-        color: #a6b0a1;
-        font-size: 0.78rem;
-        transition:
-          transform 0.2s,
-          border-color 0.2s,
-          background 0.2s;
-      }
-      .feature:hover {
-        transform: translateY(-3px);
-        border-color: rgba(243, 236, 221, 0.2);
-        background: rgba(243, 236, 221, 0.04);
-      }
-      .feature-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        border: 1px solid var(--line);
-        color: var(--ink);
-        font-family: var(--font-mono);
-        flex: 0 0 auto;
-      }
-      .feature:nth-child(1) .feature-icon {
-        background: rgba(201, 162, 39, 0.09);
-        color: var(--brass2);
-        border-color: rgba(201, 162, 39, 0.2);
-      }
-      .feature:nth-child(2) .feature-icon {
-        background: rgba(154, 51, 36, 0.09);
-        color: #e6a495;
-        border-color: rgba(154, 51, 36, 0.22);
-      }
-      .feature:nth-child(3) .feature-icon {
-        background: rgba(127, 163, 122, 0.09);
-        color: #bcdcb6;
-        border-color: rgba(127, 163, 122, 0.2);
-      }
-      .feature strong {
-        color: var(--ink);
-        font-weight: 600;
-      }
+.nav-link {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
 
-      footer {
-        width: min(1280px, calc(100% - 40px));
-        margin: 0 auto;
-        padding: 10px 0 28px;
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        color: #647063;
-        font-family: var(--font-mono);
-        font-size: 0.68rem;
-      }
-      .footer-brand {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-      }
-      .footer-mark {
-        width: 21px;
-        height: 21px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        background: radial-gradient(
-          circle at 32% 28%,
-          var(--brass2),
-          var(--brass) 68%
-        );
-        color: #12200f;
-        font-family: var(--font-display);
-        font-size: 0.62rem;
-        font-weight: 650;
-      }
+.nav-link:hover {
+  color: var(--primary);
+}
 
-      /* ---------- responsive ---------- */
-      @media (max-width: 1050px) {
-        .hero {
-          grid-template-columns: 1fr;
-          gap: 45px;
-        }
-        .copy {
-          text-align: center;
-        }
-        .lede {
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .badges {
-          justify-content: center;
-        }
-        .console-wrap {
-          min-height: 600px;
-        }
-      }
-      @media (max-width: 700px) {
-        nav,
-        .hero,
-        .features,
-        footer {
-          width: min(100% - 26px, 1280px);
-        }
-        nav {
-          padding-top: 15px;
-        }
-        .nav-right {
-          display: none;
-        }
-        .hero {
-          padding-top: 40px;
-          min-height: auto;
-        }
-        h1 {
-          font-size: clamp(2.7rem, 13vw, 4.4rem);
-          letter-spacing: -1px;
-        }
-        h1 .line2 {
-          margin-left: 0;
-        }
-        .lede {
-          font-size: 0.92rem;
-        }
-        .portal-grid {
-          grid-template-columns: 1fr;
-        }
-        .portal {
-          min-height: 225px;
-        }
-        .console-wrap {
-          min-height: 480px;
-        }
-        .orbit {
-          width: 350px;
-          height: 350px;
-        }
-        .network {
-          grid-template-columns: 1fr;
-        }
-        .features {
-          grid-template-columns: 1fr;
-          padding-bottom: 20px;
-        }
-        footer {
-          flex-direction: column;
-        }
-      }
+/* Nav Right Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-      /* ============================================================
-   MOBILE / TOUCH PERF OVERRIDES
-   Everything here strips the GPU-heavy effects (blur, backdrop-filter,
-   mix-blend-mode, long-distance box-shadows) that desktop can absorb
-   but phone GPUs can't. Applies to touch devices AND small screens,
-   since some tablets/foldables report pointer:fine but still choke.
-   ============================================================ */
-      @media (pointer: coarse), (max-width: 700px) {
-        /* full-screen SVG turbulence + mix-blend is the single most
-           expensive layer on the page for mobile compositors */
-        .noise {
-          display: none;
-        }
+/* Mobile Toggle */
+.mobile-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
 
-        /* cut blur radius hard — 84px blur = huge offscreen buffer */
-        .light {
-          filter: blur(36px);
-          opacity: 0.16;
-        }
+/* Mobile Drawer */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  background-color: var(--surface-white);
+  border-bottom: 1px solid var(--border-color);
+  padding: 24px;
+  box-shadow: var(--shadow-xl);
+  flex-direction: column;
+  gap: 20px;
+  z-index: 999;
+}
 
-        /* backdrop-filter forces a full-screen backdrop capture per
-           element per frame on mobile Safari/Chrome — swap for a
-           plain translucent fill, visually close enough */
-        .terminal-chip,
-        .feature {
-          backdrop-filter: none;
-          background: rgba(16, 27, 21, 0.82);
-        }
+.mobile-menu.open {
+  display: flex;
+}
 
-        /* dial down the always-on infinite animations instead of
-           removing them outright, so it still feels alive */
-        .orbit {
-          animation-duration: 70s;
-        }
-        .seal svg {
-          animation-duration: 55s;
-        }
-        .console::before,
-        .signal {
-          animation: none;
-          opacity: 0;
-        }
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  list-style: none;
+}
 
-        /* scan-grid mask-image is recomputed on paint; fine as a
-           faint static layer, not worth the mask cost at full opacity */
-        .scan-grid {
-          opacity: 0.12;
-        }
-      }
+.mobile-nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-main);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
 
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
-      }
-    </style>
-  </head>
+.mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
 
-  <body>
-    <canvas id="space"></canvas>
-    <div class="scan-grid"></div>
-    <div class="noise"></div>
+/* ==================================================
+   HERO SECTION
+   ================================================== */
+.hero-section {
+  padding: 68px 0 80px;
+  position: relative;
+  overflow: hidden;
+}
 
-    <div class="light a"></div>
-    <div class="light b"></div>
-    <div class="light c"></div>
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.08fr;
+  gap: 48px;
+  align-items: center;
+}
 
-    <nav>
-      <a href="/" class="brand" aria-label="AttendX home">
-        <div class="logo-mark">A</div>
-        <div class="brand-text">Attend<span>X</span></div>
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-badge-wrap {
+  margin-bottom: 20px;
+}
+
+.hero-heading {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--text-main);
+  margin-bottom: 22px;
+}
+
+.hero-subtitle {
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  max-width: 520px;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.hero-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.hero-pills span.dot {
+  color: #CBD5E1;
+}
+
+.hero-trust-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.hero-trust-note svg {
+  color: var(--success);
+}
+
+/* ==================================================
+   HERO DASHBOARD MOCKUP
+   ================================================== */
+.mockup-container {
+  position: relative;
+}
+
+.dashboard-window {
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 20px 40px -15px rgba(37, 99, 235, 0.06);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+/* Window Bar */
+.window-header {
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.window-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.window-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #E2E8F0;
+}
+
+.window-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.window-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background-color: var(--success-bg);
+  color: var(--success);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+/* Dashboard Body */
+.dashboard-inner {
+  padding: 24px;
+}
+
+.dash-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dash-title-group h4 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.015em;
+}
+
+.dash-course-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.dash-course-badge {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dash-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-chip {
+  padding: 4px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background-color: #F1F5F9;
+  color: var(--text-secondary);
+}
+
+/* Stat Grid */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dash-stat-box {
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: left;
+}
+
+.dash-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.dash-stat-num {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.dash-stat-box.stat-present .dash-stat-num {
+  color: var(--primary);
+}
+
+.dash-stat-box.stat-verified .dash-stat-num {
+  color: var(--success);
+}
+
+/* Attendance Progress & Velocity Section */
+.dash-main-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dash-card-mini {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.mini-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mini-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mini-card-val {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Progress Bar */
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #E2E8F0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563EB, #3B82F6);
+  border-radius: var(--radius-full);
+  transition: width 1s ease-in-out;
+}
+
+.progress-subtext {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Velocity SVG sparkline */
+.sparkline-wrap {
+  height: 38px;
+  margin-top: 4px;
+}
+
+.sparkline-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Security Status Bar */
+.dash-security-strip {
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sec-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.sec-pill {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sec-pill.active {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.sec-pill.verified {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.sec-pill.online {
+  background-color: #F1F5F9;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+/* Floating Elements */
+.floating-card {
+  position: absolute;
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-float);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  animation: float 4s ease-in-out infinite;
+}
+
+.floating-qr-card {
+  bottom: -20px;
+  left: -20px;
+}
+
+.floating-loc-card {
+  top: -18px;
+  right: -15px;
+  animation-delay: -2s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.float-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.float-icon.qr-bg {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.float-icon.loc-bg {
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.float-text-title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.float-text-desc {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+/* Background gradient glow behind dashboard */
+.hero-glow-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle at center, rgba(37, 99, 235, 0.08) 0%, rgba(248, 250, 252, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ==================================================
+   TRUST FEATURE STRIP
+   ================================================== */
+.trust-strip-section {
+  padding: 0 0 60px;
+  position: relative;
+  z-index: 30;
+}
+
+.trust-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.trust-strip-card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-normal);
+}
+
+.trust-strip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #CBD5E1;
+}
+
+.trust-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trust-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.trust-card-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ==================================================
+   FEATURES SECTION
+   ================================================== */
+.features-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 30px 26px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: #CBD5E1;
+}
+
+.feature-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 20px;
+  transition: all var(--transition-fast);
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.feature-title {
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+}
+
+.feature-desc {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.feature-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.feature-pill-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background-color: #F1F5F9;
+  color: var(--text-muted);
+}
+
+/* ==================================================
+   HOW IT WORKS (WORKFLOW SECTION)
+   ================================================== */
+.how-section {
+  padding: 80px 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.workflow-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  position: relative;
+}
+
+.workflow-step-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.workflow-step-card:hover {
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-md);
+  background-color: #FFFFFF;
+}
+
+.step-num-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.step-title {
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  letter-spacing: -0.015em;
+}
+
+.step-desc {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.step-visual {
+  margin-top: auto;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+}
+
+.step-visual-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.step-visual-text {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.step-visual-subtext {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* ==================================================
+   INTERACTIVE DEMO / PREVIEW SECTION
+   ================================================== */
+.demo-section {
+  padding: 80px 0;
+}
+
+.demo-box {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.demo-nav-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  background-color: #F8FAFC;
+  padding: 8px 16px 0;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.demo-tab-btn {
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.demo-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.demo-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background-color: #FFFFFF;
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.demo-tab-content {
+  display: none;
+  padding: 36px 32px;
+}
+
+.demo-tab-content.active {
+  display: block;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.demo-info h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.demo-info p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.demo-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.demo-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9375rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.demo-checklist li svg {
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+/* Demo QR Interactive Panel */
+.demo-preview-card {
+  background-color: #F8FAFC;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.demo-qr-box {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.demo-qr-svg {
+  width: 150px;
+  height: 150px;
+}
+
+.demo-qr-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(37, 99, 235, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.demo-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.demo-timer-badge .time-num {
+  font-family: var(--font-mono);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.demo-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ==================================================
+   SECURITY & INTEGRITY SECTION
+   ================================================== */
+.security-section {
+  padding: 80px 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.security-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sec-feature-box {
+  padding: 18px 20px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: 16px;
+  transition: all var(--transition-fast);
+}
+
+.sec-feature-box:hover {
+  background-color: #FFFFFF;
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.sec-feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sec-feature-text h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.sec-feature-text p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Security Audit Shield Box */
+.security-shield-card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.shield-badge-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background-color: var(--success-bg);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+}
+
+.shield-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+}
+
+.shield-desc {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.security-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+.sec-metric-item {
+  text-align: center;
+}
+
+.sec-metric-num {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sec-metric-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* ==================================================
+   STATISTICS / IMPACT STRIP
+   ================================================== */
+.stats-section {
+  padding: 64px 0;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  text-align: center;
+}
+
+.stat-item {
+  background: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px 20px;
+  box-shadow: var(--shadow-xs);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ==================================================
+   FAQ SECTION
+   ================================================== */
+.faq-section {
+  padding: 80px 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+}
+
+.faq-list {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faq-item {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.faq-item:hover {
+  border-color: #CBD5E1;
+}
+
+.faq-item.active {
+  background-color: #FFFFFF;
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 20px 24px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.faq-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0 24px;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 300px;
+  padding-bottom: 20px;
+}
+
+.faq-answer p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ==================================================
+   BOTTOM CTA SECTION
+   ================================================== */
+.cta-section {
+  padding: 80px 0;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+}
+
+.cta-banner {
+  background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #1D4ED8 100%);
+  border-radius: var(--radius-xl);
+  padding: 60px 48px;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0 20px 35px -10px rgba(37, 99, 235, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.15), transparent 45%);
+  pointer-events: none;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-desc {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+.btn-white {
+  background-color: #FFFFFF;
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-white:hover {
+  background-color: #F8FAFC;
+  transform: translateY(-1px);
+}
+
+.btn-ghost-white {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+}
+
+.btn-ghost-white:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ==================================================
+   FOOTER
+   ================================================== */
+.footer {
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+  padding: 64px 0 32px;
+  margin-top: auto;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 14px;
+  max-width: 320px;
+}
+
+.footer-col h6 {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 18px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 28px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.system-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--success);
+}
+
+/* ==================================================
+   RESPONSIVENESS / MEDIA QUERIES
+   ================================================== */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .hero-content {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .hero-cta-group {
+    justify-content: center;
+  }
+  
+  .trust-strip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .workflow-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .security-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-menu, .nav-actions {
+    display: none;
+  }
+  
+  .mobile-toggle {
+    display: flex;
+  }
+  
+  .hero-heading {
+    font-size: 2.5rem;
+  }
+  
+  .floating-card {
+    display: none; /* Avoid overflowing tiny screens */
+  }
+  
+  .dash-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dash-main-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .trust-strip-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .cta-title {
+    font-size: 1.875rem;
+  }
+  
+  .cta-banner {
+    padding: 40px 24px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header class="navbar-wrapper" id="navbar">
+    <div class="container navbar">
+      <!-- Logo -->
+      <a href="index.html" class="brand-logo" aria-label="AttendX Homepage">
+        <div class="logo-symbol">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="logo-text">Attend<span>X</span></span>
       </a>
-      <div class="nav-right">
-        <div class="terminal-chip">
-          <span class="pulse-dot"></span> REGISTER OPEN
-        </div>
-        <div class="terminal-chip">CAMPUS / REAL-TIME</div>
+
+      <!-- Desktop Nav Menu -->
+      <nav aria-label="Primary Navigation">
+        <ul class="nav-menu">
+          <li><a href="#features" class="nav-link">Features</a></li>
+          <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="#interactive-demo" class="nav-link">Live Demo</a></li>
+          <li><a href="#security" class="nav-link">Security</a></li>
+          <li><a href="#faq" class="nav-link">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <!-- Desktop Action Buttons -->
+      <div class="nav-actions">
+        <a href="/student.html" class="btn btn-outline" id="nav-student-btn">Student Login</a>
+        <a href="/teacher.html" class="btn btn-primary" id="nav-teacher-btn">
+          Teacher Portal
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
       </div>
-    </nav>
 
-    <main class="hero">
-      <section class="copy">
-        <div class="overline">
-          <span>ATTENDX</span> // <b>A VERIFIED RECORD OF PRESENCE</b>
-        </div>
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-toggle" id="mobile-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
 
-        <h1>
-          Attendance,<br />
-          <span class="line2 chromatic">stamped true.</span>
-        </h1>
+    <!-- Mobile Drawer Menu -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <ul class="mobile-nav-links">
+        <li><a href="#features" class="mobile-nav-link">Features</a></li>
+        <li><a href="#how-it-works" class="mobile-nav-link">How It Works</a></li>
+        <li><a href="#interactive-demo" class="mobile-nav-link">Live Demo</a></li>
+        <li><a href="#security" class="mobile-nav-link">Security</a></li>
+        <li><a href="#faq" class="mobile-nav-link">FAQ</a></li>
+      </ul>
+      <div class="mobile-actions">
+        <a href="/student.html" class="btn btn-secondary" style="width: 100%;">Student Login</a>
+        <a href="/teacher.html" class="btn btn-primary" style="width: 100%;">Teacher Portal →</a>
+      </div>
+    </div>
+  </header>
 
-        <p class="lede">
-          <strong
-            >Fast enough for a classroom. Rigorous enough for an
-            institution.</strong
-          >
-          AttendX combines dynamic QR sessions, location verification, live
-          monitoring and security signals into one connected workflow — every
-          mark on the register backed by evidence.
-        </p>
-
-        <div class="badges">
-          <span class="badge brass">15s ROTATING TOKEN</span>
-          <span class="badge blood">LIVE THREAT SIGNALS</span>
-          <span class="badge sage">NO SPECIALIZED HARDWARE</span>
-        </div>
-
-        <!-- EXISTING LOGIC PRESERVED -->
-        <div class="portal-grid">
-          <a href="/teacher.html" class="portal">
-            <div class="portal-content">
-              <div class="portal-head">
-                <div class="portal-icon">👨‍🏫</div>
-                <div class="portal-arrow">↗</div>
-              </div>
-              <h2>Teacher Command Center</h2>
-              <p>
-                Start sessions, display the live QR, watch attendance arrive and
-                react to security events in real time.
-              </p>
-              <div class="portal-meta">
-                <span>Enter workspace</span>
-                <span>Teacher →</span>
-              </div>
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <!-- LEFT COLUMN: Headline & CTA -->
+          <div class="hero-content">
+            <div class="hero-badge-wrap">
+              <span class="badge badge-primary">
+                <span class="badge-dot pulse"></span>
+                SMART ATTENDANCE PLATFORM
+              </span>
             </div>
-          </a>
 
-          <a href="/student.html" class="portal blood">
-            <div class="portal-content">
-              <div class="portal-head">
-                <div class="portal-icon">🎓</div>
-                <div class="portal-arrow">↗</div>
-              </div>
-              <h2>Student Checkpoint</h2>
-              <p>
-                Scan the active QR, verify classroom presence and keep track of
-                your attendance and credibility history.
-              </p>
-              <div class="portal-meta">
-                <span>Start attendance</span>
-                <span>Student →</span>
-              </div>
+            <h1 class="hero-heading">
+              Attendance, made <span class="text-primary">smarter.</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              AttendX combines dynamic QR attendance, classroom verification and real-time monitoring into one secure attendance platform.
+            </p>
+
+            <div class="hero-cta-group">
+              <a href="/teacher.html" class="btn btn-primary btn-lg" id="hero-teacher-cta">
+                Open Teacher Portal →
+              </a>
+              <a href="/student.html" class="btn btn-secondary btn-lg" id="hero-student-cta">
+                Student Check-in
+              </a>
             </div>
-          </a>
-        </div>
-      </section>
 
-      <!-- Animated product console -->
-      <section class="console-wrap" aria-label="AttendX live system preview">
-        <div class="orbit"></div>
-
-        <div class="console" id="console">
-          <div class="console-top">
-            <div class="console-left">
-              <div class="dots"><span></span><span></span><span></span></div>
-              <div class="console-name">attendx / command telemetry</div>
+            <div class="hero-pills">
+              <span>Dynamic QR</span>
+              <span class="dot">•</span>
+              <span>Location Verification</span>
+              <span class="dot">•</span>
+              <span>Real-Time Monitoring</span>
             </div>
-            <div class="live"><i></i> LIVE</div>
+
+            <div class="hero-trust-note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Built for modern classrooms.</span>
+            </div>
           </div>
 
-          <div class="console-body">
-            <div class="console-kicker">ACTIVE SESSION</div>
+          <!-- RIGHT COLUMN: Dashboard Mockup -->
+          <div class="mockup-container">
+            <div class="hero-glow-bg"></div>
 
-            <div class="console-title">
-              <h3>CS101 · Section A</h3>
-              <div class="session-id">SESSION 8F3A</div>
-            </div>
-
-            <div class="terminal">
-              <div class="term-line">
-                <span class="term-prompt">$</span><span>session.start()</span>
+            <!-- Floating Pill 1: Location Verified -->
+            <div class="floating-card floating-loc-card" id="hero-float-loc">
+              <div class="float-icon loc-bg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
               </div>
-              <div class="term-line">
-                <span class="term-muted">→</span
-                ><span class="term-ok">token.rotate: 00:14</span>
-              </div>
-              <div class="term-line">
-                <span class="term-muted">→</span
-                ><span class="term-ok">geofence: VERIFIED</span>
-              </div>
-              <div class="term-line">
-                <span class="term-muted">→</span
-                ><span class="term-flag">threat-monitor: ARMED</span>
+              <div>
+                <div class="float-text-title">Location Verified</div>
+                <div class="float-text-desc">Classroom Zone</div>
               </div>
             </div>
 
-            <div class="network">
-              <div class="node active">
-                <small>QR</small>
-                <strong>ACTIVE</strong>
-                <em>rotating token</em>
-                <div class="signal"></div>
-              </div>
-
-              <div class="node active">
-                <small>GPS</small>
-                <strong>LOCKED</strong>
-                <em>classroom zone</em>
-                <div class="signal"></div>
-              </div>
-
-              <div class="node active">
-                <small>SYNC</small>
-                <strong>LIVE</strong>
-                <em>teacher socket</em>
-                <div class="signal"></div>
-              </div>
-            </div>
-
-            <div class="attendance">
-              <div class="attendance-top">
-                <span>Attendance integrity</span>
-                <b id="integrityText">87%</b>
-              </div>
-
-              <div class="meter">
-                <div class="meter-fill" id="meterFill"></div>
-              </div>
-
-              <div class="mini-metrics">
-                <div class="metric brass">
-                  <span>Present</span>
-                  <strong id="present">48</strong>
+            <!-- Dashboard Frame -->
+            <div class="dashboard-window" id="hero-dashboard-mockup">
+              <!-- Window Chrome -->
+              <div class="window-header">
+                <div class="window-dots">
+                  <div class="window-dot" style="background-color: #EF4444;"></div>
+                  <div class="window-dot" style="background-color: #F59E0B;"></div>
+                  <div class="window-dot" style="background-color: #10B981;"></div>
                 </div>
-                <div class="metric blood">
-                  <span>Alerts</span>
-                  <strong id="alerts">02</strong>
+                <div class="window-breadcrumbs">
+                  <span>AttendX Console</span>
+                  <span>/</span>
+                  <span style="color: var(--text-main);">Live Session</span>
                 </div>
-                <div class="metric sage">
-                  <span>Verified</span>
-                  <strong id="verified">46</strong>
+                <div class="window-status-pill">
+                  <span class="badge-dot" style="background-color: var(--success);"></span>
+                  Session Active
                 </div>
               </div>
+
+              <!-- Dashboard Body -->
+              <div class="dashboard-inner">
+                <!-- Topbar Info -->
+                <div class="dash-topbar">
+                  <div class="dash-title-group">
+                    <h4>Live Attendance</h4>
+                    <div class="dash-course-meta">
+                      <span class="dash-course-badge">CS101 · Section A</span>
+                      <span>•</span>
+                      <span>Room 304 (Hall B)</span>
+                    </div>
+                  </div>
+                  <div class="dash-actions-group">
+                    <span class="dash-chip">Fall 2026</span>
+                    <span class="badge badge-success">● Active</span>
+                  </div>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="dash-stats-grid">
+                  <div class="dash-stat-box stat-present">
+                    <div class="dash-stat-label">Present</div>
+                    <div class="dash-stat-num" id="stat-present-num">48</div>
+                  </div>
+                  <div class="dash-stat-box">
+                    <div class="dash-stat-label">Absent</div>
+                    <div class="dash-stat-num">4</div>
+                  </div>
+                  <div class="dash-stat-box">
+                    <div class="dash-stat-label">Late</div>
+                    <div class="dash-stat-num">2</div>
+                  </div>
+                  <div class="dash-stat-box stat-verified">
+                    <div class="dash-stat-label">Verified</div>
+                    <div class="dash-stat-num" id="stat-verified-num">46</div>
+                  </div>
+                </div>
+
+                <!-- Attendance Rate & Velocity Mini-cards -->
+                <div class="dash-main-metrics">
+                  <!-- Attendance Rate -->
+                  <div class="dash-card-mini">
+                    <div class="mini-card-header">
+                      <span class="mini-card-title">Attendance Rate</span>
+                      <span class="mini-card-val">87%</span>
+                    </div>
+                    <div class="progress-track">
+                      <div class="progress-fill" style="width: 87%;"></div>
+                    </div>
+                    <div class="progress-subtext">
+                      <span>48 of 54 enrolled</span>
+                      <span style="color: var(--success); font-weight: 600;">+12% vs last week</span>
+                    </div>
+                  </div>
+
+                  <!-- Trend / Scan Velocity Chart -->
+                  <div class="dash-card-mini">
+                    <div class="mini-card-header">
+                      <span class="mini-card-title">Scan Velocity</span>
+                      <span style="font-size: 0.8125rem; font-weight: 600; color: var(--primary);">4.2 scans/sec</span>
+                    </div>
+                    <div class="sparkline-wrap">
+                      <svg viewBox="0 0 160 38" fill="none" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#2563EB" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#2563EB" stop-opacity="0.0"/>
+                          </linearGradient>
+                        </defs>
+                        <path d="M0,32 Q20,30 35,22 T70,14 T105,8 T135,16 T160,5 L160,38 L0,38 Z" fill="url(#chartGradient)"/>
+                        <path d="M0,32 Q20,30 35,22 T70,14 T105,8 T135,16 T160,5" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="160" cy="5" r="3" fill="#2563EB"/>
+                      </svg>
+                    </div>
+                    <div class="progress-subtext">
+                      <span>Session start: 10:00 AM</span>
+                      <span>Peak scan at 10:04 AM</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Security Indicators Strip -->
+                <div class="dash-security-strip">
+                  <div class="sec-item">
+                    <span>QR Session:</span>
+                    <span class="sec-pill active">ACTIVE</span>
+                  </div>
+                  <div class="sec-item">
+                    <span>Location:</span>
+                    <span class="sec-pill verified">VERIFIED</span>
+                  </div>
+                  <div class="sec-item">
+                    <span>Sync:</span>
+                    <span class="sec-pill online">ONLINE</span>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            <!-- Floating Pill 2: QR Session Refreshing -->
+            <div class="floating-card floating-qr-card" id="hero-float-qr">
+              <div class="float-icon qr-bg">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </div>
+              <div>
+                <div class="float-text-title">QR Session</div>
+                <div class="float-text-desc" id="hero-countdown-text">Refreshing in 00:14</div>
+              </div>
+            </div>
+
           </div>
-        </div>
-      </section>
-    </main>
-
-    <section class="features">
-      <div class="feature">
-        <div class="feature-icon">◈</div>
-        <div>
-          <strong>Dynamic QR</strong> · session tokens rotate continuously
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⌖</div>
-        <div>
-          <strong>Location</strong> · classroom proximity is checked server-side
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚡</div>
-        <div>
-          <strong>Real-time</strong> · teacher dashboard receives live events
         </div>
       </div>
     </section>
 
-    <footer>
-      <div class="footer-brand">
-        <div class="footer-mark">A</div>
-        <span>© 2026 AttendX · Smart Attendance Management System</span>
+    <!-- TRUST FEATURE STRIP -->
+    <section class="trust-strip-section" id="trust-strip">
+      <div class="container">
+        <div class="trust-strip-grid">
+          <!-- Item 1: Dynamic QR -->
+          <div class="trust-strip-card">
+            <div class="trust-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <h3 class="trust-card-title">Dynamic QR</h3>
+            <p class="trust-card-desc">Short-lived QR sessions reduce stale scans.</p>
+          </div>
+
+          <!-- Item 2: Location Verification -->
+          <div class="trust-strip-card">
+            <div class="trust-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <h3 class="trust-card-title">Location Verification</h3>
+            <p class="trust-card-desc">Classroom proximity is validated during attendance.</p>
+          </div>
+
+          <!-- Item 3: Real-Time Monitoring -->
+          <div class="trust-strip-card">
+            <div class="trust-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3 class="trust-card-title">Real-Time Monitoring</h3>
+            <p class="trust-card-desc">Teachers can monitor attendance as it happens.</p>
+          </div>
+
+          <!-- Item 4: No Special Hardware -->
+          <div class="trust-strip-card">
+            <div class="trust-icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <h3 class="trust-card-title">No Special Hardware</h3>
+            <p class="trust-card-desc">Works with existing phones and classroom screens.</p>
+          </div>
+        </div>
       </div>
-      <span>Built for faster, more accountable classrooms.</span>
-    </footer>
+    </section>
 
-    <script>
-      /* ============================================================
-   Dynamic visual system — no application/backend dependencies.
-   PERF PATCH: mobile/touch gets fewer particles, no shadowBlur,
-   lower devicePixelRatio cap, and no pointer-tracking listeners.
-   The rAF loop also pauses when the tab isn't visible.
-   ============================================================ */
+    <!-- FEATURES SECTION -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Powerful Capabilities</div>
+          <h2 class="section-title">Everything you need for reliable attendance.</h2>
+          <p class="section-subtitle">AttendX brings attendance, verification and monitoring into one simple workflow.</p>
+        </div>
 
-      const isMobile =
-        window.matchMedia("(pointer: coarse)").matches ||
-        window.innerWidth < 700;
+        <div class="features-grid">
+          <!-- Card 1: Dynamic QR Attendance -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <path d="M7 7h.01"></path>
+                <path d="M17 7h.01"></path>
+                <path d="M7 17h.01"></path>
+                <path d="M17 17h.01"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Dynamic QR Attendance</h3>
+            <p class="feature-desc">Generate short-lived QR sessions for classroom attendance that rotate automatically to eliminate static screenshots.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">15s Rotation</span>
+              <span class="feature-pill-tag">Encrypted Hash</span>
+            </div>
+          </div>
 
-      const canvas = document.getElementById("space");
-      const ctx = canvas.getContext("2d");
+          <!-- Card 2: Classroom Verification -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                <line x1="8" y1="2" x2="8" y2="18"></line>
+                <line x1="16" y1="6" x2="16" y2="22"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Classroom Verification</h3>
+            <p class="feature-desc">Verify that students are attending from the expected classroom area using precise geofencing tolerances.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">Geofencing</span>
+              <span class="feature-pill-tag">Radius Lockdown</span>
+            </div>
+          </div>
 
-      let w = 0;
-      let h = 0;
-      let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
-      let particles = [];
-      let rafId = null;
+          <!-- Card 3: Real-Time Monitoring -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Real-Time Monitoring</h3>
+            <p class="feature-desc">Teachers can see attendance activity as it happens with live roster counters, instant sync, and verified timestamps.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">Live Feed</span>
+              <span class="feature-pill-tag">Zero Latency</span>
+            </div>
+          </div>
 
-      function resizeCanvas() {
-        w = window.innerWidth;
-        h = window.innerHeight;
+          <!-- Card 4: Security Signals -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Security Signals</h3>
+            <p class="feature-desc">Surface suspicious activity, proxy scan patterns, multiple check-ins from identical IP/device headers, and location mismatches.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">Anti-Proxy</span>
+              <span class="feature-pill-tag">Device Fingerprint</span>
+            </div>
+          </div>
 
-        canvas.width = Math.floor(w * dpr);
-        canvas.height = Math.floor(h * dpr);
-        canvas.style.width = w + "px";
-        canvas.style.height = h + "px";
+          <!-- Card 5: Teacher Command Center -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Teacher Dashboard</h3>
+            <p class="feature-desc">Control course sessions with one click, project dynamic codes to screens, and export clean CSV/Excel reports for university SIS.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">CSV / SIS Export</span>
+              <span class="feature-pill-tag">Instant Rostering</span>
+            </div>
+          </div>
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          <!-- Card 6: Student Attendance Workflow -->
+          <div class="feature-card">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <polyline points="17 11 19 13 23 9"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-title">Student Workflow</h3>
+            <p class="feature-desc">Frictionless 5-second check-in directly within any modern mobile browser with zero app installation required.</p>
+            <div class="feature-tag-list">
+              <span class="feature-pill-tag">No App Required</span>
+              <span class="feature-pill-tag">5-Sec Check-in</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        const divisor = isMobile ? 32000 : 12000;
-        const cap = isMobile ? 34 : 120;
-        const floor = isMobile ? 18 : 48;
-        const count = Math.min(cap, Math.max(floor, Math.floor((w * h) / divisor)));
+    <!-- HOW IT WORKS SECTION -->
+    <section class="how-section" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Seamless Workflow</div>
+          <h2 class="section-title">How AttendX works in the classroom.</h2>
+          <p class="section-subtitle">A simple three-step process engineered for maximum speed and zero classroom friction.</p>
+        </div>
 
-        particles = Array.from({ length: count }, () => ({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 1.4 + 0.25,
-          vx: (Math.random() - 0.5) * 0.16,
-          vy: (Math.random() - 0.5) * 0.16,
-          hue: Math.random() > 0.5 ? 45 : 8,
-          a: Math.random() * 0.4 + 0.12,
-        }));
-      }
+        <div class="workflow-steps-grid">
+          <!-- Step 1 -->
+          <div class="workflow-step-card">
+            <div class="step-num-badge">1</div>
+            <h3 class="step-title">Teacher Launches Session</h3>
+            <p class="step-desc">Faculty selects their course section and projects the secure AttendX session view onto the classroom display.</p>
+            <div class="step-visual">
+              <div class="step-visual-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+              </div>
+              <div>
+                <div class="step-visual-text">CS101 · Room 304</div>
+                <div class="step-visual-subtext">Session token initialized</div>
+              </div>
+            </div>
+          </div>
 
-      function drawSpace() {
-        ctx.clearRect(0, 0, w, h);
+          <!-- Step 2 -->
+          <div class="workflow-step-card">
+            <div class="step-num-badge">2</div>
+            <h3 class="step-title">Students Scan Dynamic QR</h3>
+            <p class="step-desc">Students open their camera on any smartphone and scan the rotating code. The token refreshes every 15 seconds.</p>
+            <div class="step-visual">
+              <div class="step-visual-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/></svg>
+              </div>
+              <div>
+                <div class="step-visual-text">Classroom Proximity</div>
+                <div class="step-visual-subtext">GPS radius verified (within 25m)</div>
+              </div>
+            </div>
+          </div>
 
-        for (const p of particles) {
-          p.x += p.vx;
-          p.y += p.vy;
+          <!-- Step 3 -->
+          <div class="workflow-step-card">
+            <div class="step-num-badge">3</div>
+            <h3 class="step-title">Instant Verification & Record</h3>
+            <p class="step-desc">Attendance is confirmed immediately on the student device and syncs to the professor's live gradebook in real time.</p>
+            <div class="step-visual">
+              <div class="step-visual-icon" style="background-color: var(--success-bg); color: var(--success);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="step-visual-text">Attendance Verified</div>
+                <div class="step-visual-subtext">Synced to university record</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          if (p.x < -10) p.x = w + 10;
-          if (p.x > w + 10) p.x = -10;
-          if (p.y < -10) p.y = h + 10;
-          if (p.y > h + 10) p.y = -10;
+    <!-- INTERACTIVE DEMO / PREVIEW -->
+    <section class="demo-section" id="interactive-demo">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Interactive Preview</div>
+          <h2 class="section-title">Experience the technology in action.</h2>
+          <p class="section-subtitle">Explore how short-lived dynamic sessions and geofence validation eliminate attendance fraud.</p>
+        </div>
 
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          // shadowBlur removed: it was the single biggest cost in this
-          // loop (per-particle blur, every frame). Plain fill keeps the
-          // same warm-dot look without the recompute.
-          ctx.fillStyle = `hsla(${p.hue},72%,62%,${p.a})`;
-          ctx.fill();
-        }
+        <div class="demo-box">
+          <!-- Tab Navigation -->
+          <div class="demo-nav-tabs">
+            <button class="demo-tab-btn active" data-tab="tab-qr">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Dynamic QR Rotation
+            </button>
+            <button class="demo-tab-btn" data-tab="tab-geofence">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>
+              Classroom Geofencing
+            </button>
+            <button class="demo-tab-btn" data-tab="tab-security">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Proxy Detection Signal
+            </button>
+          </div>
 
-        rafId = requestAnimationFrame(drawSpace);
-      }
+          <!-- Tab Content 1: QR Rotation -->
+          <div class="demo-tab-content active" id="tab-qr">
+            <div class="demo-grid">
+              <div class="demo-info">
+                <h3>Rotating Session Tokens</h3>
+                <p>Every 15 seconds, AttendX generates a new cryptographically hashed QR signature. If an absent student attempts to scan a forwarded screenshot from a chat group, the token has already expired.</p>
+                <ul class="demo-checklist">
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Sub-second cryptographic entropy calculation
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Automatic client cache invalidation
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Zero latency across projection screens
+                  </li>
+                </ul>
+              </div>
 
-      function startLoop() {
-        if (rafId === null) rafId = requestAnimationFrame(drawSpace);
-      }
-      function stopLoop() {
-        if (rafId !== null) {
-          cancelAnimationFrame(rafId);
-          rafId = null;
-        }
-      }
+              <!-- Interactive Box -->
+              <div class="demo-preview-card">
+                <div class="demo-timer-badge">
+                  <span class="badge-dot" style="background-color: var(--primary);"></span>
+                  Next rotation in <span class="time-num" id="demo-seconds-count">12s</span>
+                </div>
 
-      resizeCanvas();
-      startLoop();
-      window.addEventListener("resize", resizeCanvas);
+                <div class="demo-qr-box" id="demo-qr-container">
+                  <svg class="demo-qr-svg" viewBox="0 0 100 100">
+                    <rect width="100" height="100" fill="#FFFFFF"/>
+                    <!-- QR Corner 1 -->
+                    <rect x="10" y="10" width="25" height="25" fill="#0F172A" rx="3"/>
+                    <rect x="15" y="15" width="15" height="15" fill="#FFFFFF" rx="2"/>
+                    <rect x="18" y="18" width="9" height="9" fill="#0F172A" rx="1"/>
+                    <!-- QR Corner 2 -->
+                    <rect x="65" y="10" width="25" height="25" fill="#0F172A" rx="3"/>
+                    <rect x="70" y="15" width="15" height="15" fill="#FFFFFF" rx="2"/>
+                    <rect x="73" y="18" width="9" height="9" fill="#0F172A" rx="1"/>
+                    <!-- QR Corner 3 -->
+                    <rect x="10" y="65" width="25" height="25" fill="#0F172A" rx="3"/>
+                    <rect x="15" y="70" width="15" height="15" fill="#FFFFFF" rx="2"/>
+                    <rect x="18" y="73" width="9" height="9" fill="#0F172A" rx="1"/>
+                    <!-- Dynamic Data Pattern Matrix -->
+                    <rect x="42" y="12" width="6" height="6" fill="#2563EB" id="qr-bit-1"/>
+                    <rect x="52" y="12" width="6" height="6" fill="#0F172A" id="qr-bit-2"/>
+                    <rect x="42" y="24" width="6" height="6" fill="#0F172A" id="qr-bit-3"/>
+                    <rect x="52" y="24" width="6" height="6" fill="#2563EB" id="qr-bit-4"/>
+                    <rect x="42" y="42" width="16" height="16" fill="#2563EB" rx="2" id="qr-bit-center"/>
+                    <rect x="12" y="42" width="6" height="6" fill="#0F172A" id="qr-bit-5"/>
+                    <rect x="24" y="42" width="6" height="6" fill="#0F172A" id="qr-bit-6"/>
+                    <rect x="68" y="42" width="6" height="6" fill="#0F172A" id="qr-bit-7"/>
+                    <rect x="80" y="42" width="6" height="6" fill="#2563EB" id="qr-bit-8"/>
+                    <rect x="42" y="68" width="6" height="6" fill="#0F172A" id="qr-bit-9"/>
+                    <rect x="52" y="68" width="6" height="6" fill="#2563EB" id="qr-bit-10"/>
+                    <rect x="42" y="80" width="6" height="6" fill="#2563EB" id="qr-bit-11"/>
+                    <rect x="68" y="68" width="8" height="8" fill="#0F172A" id="qr-bit-12"/>
+                    <rect x="80" y="80" width="8" height="8" fill="#2563EB" id="qr-bit-13"/>
+                  </svg>
+                  <div class="demo-qr-overlay" id="demo-qr-flash" style="opacity: 0; transition: opacity 0.3s;">
+                    <span class="badge badge-primary">Rotated</span>
+                  </div>
+                </div>
 
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) stopLoop();
-        else startLoop();
+                <div class="demo-action-row">
+                  <button class="btn btn-secondary btn-sm" id="btn-force-rotate">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    Force Rotate Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 2: Geofencing -->
+          <div class="demo-tab-content" id="tab-geofence">
+            <div class="demo-grid">
+              <div class="demo-info">
+                <h3>Hardware-Free Classroom Geofencing</h3>
+                <p>AttendX uses precise browser geolocation APIs to ensure scans originate from inside the assigned lecture hall. Scans outside the configurable radius boundary are instantly flagged.</p>
+                <ul class="demo-checklist">
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Customizable radius (10m to 100m)
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Zero student tracking outside lecture times
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Works across iOS Safari and Android Chrome
+                  </li>
+                </ul>
+              </div>
+
+              <div class="demo-preview-card">
+                <div style="background-color: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; position: relative;">
+                  <div style="font-size: 0.8125rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">Classroom Radius Validation</div>
+                  <div style="position: relative; width: 180px; height: 180px; margin: 12px auto; border: 2px dashed #93C5FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(37, 99, 235, 0.04);">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background-color: var(--primary); display: flex; align-items: center; justify-content: center; color: white;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <!-- Valid Student Pin -->
+                    <div style="position: absolute; top: 35px; right: 45px; display: flex; align-items: center; gap: 4px; background: #DCFCE7; padding: 2px 6px; border-radius: 4px; border: 1px solid #86EFAC;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background: #16A34A;"></span>
+                      <span style="font-size: 0.625rem; font-weight: 600; color: #16A34A;">In Zone (8m)</span>
+                    </div>
+                    <!-- Invalid Student Pin -->
+                    <div style="position: absolute; bottom: -12px; left: -10px; display: flex; align-items: center; gap: 4px; background: #FEE2E2; padding: 2px 6px; border-radius: 4px; border: 1px solid #FCA5A5;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background: #DC2626;"></span>
+                      <span style="font-size: 0.625rem; font-weight: 600; color: #DC2626;">Outside (140m)</span>
+                    </div>
+                  </div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Configured Classroom Zone: Room 304 (25m Radius)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 3: Security Signals -->
+          <div class="demo-tab-content" id="tab-security">
+            <div class="demo-grid">
+              <div class="demo-info">
+                <h3>Anomaly & Fraud Detection</h3>
+                <p>AttendX cross-references client IP addresses, user agent headers, and scan frequency to identify when multiple students attempt to check in using the same mobile device or tethered proxy.</p>
+                <ul class="demo-checklist">
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Multi-account single-device flag
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Suspicious rapid scan velocity alerts
+                  </li>
+                  <li>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    One-click teacher review & override
+                  </li>
+                </ul>
+              </div>
+
+              <div class="demo-preview-card">
+                <div style="text-align: left; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px;">
+                  <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Live Security Feed</div>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: #F8FAFC; border-radius: 6px; font-size: 0.8125rem;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--success); font-weight: 700;">✓</span>
+                        <span style="font-weight: 600;">Alex Morgan (CS101)</span>
+                      </div>
+                      <span style="font-size: 0.6875rem; color: var(--text-muted);">Verified · 10:04:12</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: #F8FAFC; border-radius: 6px; font-size: 0.8125rem;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--success); font-weight: 700;">✓</span>
+                        <span style="font-weight: 600;">Elena Rostova (CS101)</span>
+                      </div>
+                      <span style="font-size: 0.6875rem; color: var(--text-muted);">Verified · 10:04:14</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 6px; font-size: 0.8125rem;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--warning); font-weight: 700;">⚠</span>
+                        <span style="font-weight: 600; color: #92400E;">Token Expired Scan</span>
+                      </div>
+                      <span style="font-size: 0.6875rem; font-weight: 600; color: #92400E;">Blocked (Stale QR)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY & TRUST SECTION -->
+    <section class="security-section" id="security">
+      <div class="container">
+        <div class="security-grid">
+          <!-- Left: Feature boxes -->
+          <div>
+            <div class="section-tag">Enterprise Standards</div>
+            <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">Built for university integrity & student privacy.</h2>
+            <p class="section-subtitle" style="text-align: left; margin-bottom: 32px;">
+              Designed with education administrators in mind. AttendX eliminates student impersonation while respecting personal device privacy.
+            </p>
+
+            <div class="security-card-list">
+              <div class="sec-feature-box">
+                <div class="sec-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div class="sec-feature-text">
+                  <h5>HMAC-Signed Dynamic Tokens</h5>
+                  <p>Each rotating QR contains a cryptographically signed payload that expires within seconds, preventing code forwarding.</p>
+                </div>
+              </div>
+
+              <div class="sec-feature-box">
+                <div class="sec-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </div>
+                <div class="sec-feature-text">
+                  <h5>Zero Background Tracking</h5>
+                  <p>Location checks occur strictly on demand during check-in. AttendX never tracks student coordinates outside session hours.</p>
+                </div>
+              </div>
+
+              <div class="sec-feature-box">
+                <div class="sec-feature-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="sec-feature-text">
+                  <h5>Audit-Ready Logs</h5>
+                  <p>Every attendance submission includes immutable verification evidence ready for academic dispute review.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Shield Card -->
+          <div>
+            <div class="security-shield-card">
+              <div class="shield-badge-icon">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <h3 class="shield-title">Guaranteed Roster Authenticity</h3>
+              <p class="shield-desc">
+                AttendX reduces false check-in attempts by over 99%, saving professors up to 15 minutes of instructional time every lecture.
+              </p>
+
+              <div class="security-metrics-row">
+                <div class="sec-metric-item">
+                  <div class="sec-metric-num">99.4%</div>
+                  <div class="sec-metric-label">Proxy Stop</div>
+                </div>
+                <div class="sec-metric-item">
+                  <div class="sec-metric-num">15s</div>
+                  <div class="sec-metric-label">Token Expiry</div>
+                </div>
+                <div class="sec-metric-item">
+                  <div class="sec-metric-num">100%</div>
+                  <div class="sec-metric-label">Browser Based</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPACT & METRICS STRIP -->
+    <section class="stats-section" id="about">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">99.4%</div>
+            <div class="stat-label">Proxy Reduction</div>
+            <div class="stat-sub">Zero unauthorized scans</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">&lt; 5s</div>
+            <div class="stat-label">Average Check-in</div>
+            <div class="stat-sub">Per student workflow</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Hardware-Free</div>
+            <div class="stat-sub">Existing phone & projector</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">50k+</div>
+            <div class="stat-label">Class Sessions</div>
+            <div class="stat-sub">Verified reliably</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section class="faq-section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-tag">Frequently Asked Questions</div>
+          <h2 class="section-title">Common questions about AttendX.</h2>
+          <p class="section-subtitle">Everything you need to know about setting up and running AttendX in your department.</p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do students need to install a mobile application?</span>
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              <p>No. AttendX runs seamlessly in any modern mobile browser (Safari, Chrome, Firefox, Edge). Students simply scan the classroom QR code using their standard camera app to authenticate and verify their location.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does AttendX prevent students from sending screenshots to friends?</span>
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              <p>AttendX uses rotating dynamic session tokens that expire every 15 seconds, coupled with classroom-level geolocation verification. Even if a screenshot is texted to an absent student, the token expires before it can be scanned, and any scan outside the classroom boundary is blocked.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is specialized hardware like biometric readers or RFID scanners required?</span>
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Zero dedicated hardware is required. Teachers project the attendance console on their existing classroom screen or projector, and students use their existing smartphones.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can attendance records be exported to university grading systems?</span>
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes. AttendX allows professors to export one-click CSV and Excel reports formatted for Canvas, Blackboard, Moodle, and university SIS platforms.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Does AttendX track student location after class ends?</span>
+              <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Absolutely not. Geolocation coordinates are captured exclusively at the split second a student submits their attendance for that specific course session. No background tracking or continuous monitoring exists.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION BANNER -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 class="cta-title">Ready to modernize your classroom attendance?</h2>
+          <p class="cta-desc">
+            Empower your faculty with fast, verifiable, hardware-free attendance tracking today.
+          </p>
+          <div class="cta-buttons">
+            <a href="/teacher.html" class="btn btn-white btn-lg" id="bottom-teacher-cta">
+              Open Teacher Portal →
+            </a>
+            <a href="/student.html" class="btn btn-ghost-white btn-lg" id="bottom-student-cta">
+              Student Check-in
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <div class="logo-symbol">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="logo-text">Attend<span>X</span></span>
+          </a>
+          <p>
+            The modern, enterprise-ready attendance management platform for colleges and university classrooms.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h6>Product</h6>
+          <ul class="footer-links">
+            <li><a href="#features">Dynamic QR</a></li>
+            <li><a href="#how-it-works">Classroom Geofence</a></li>
+            <li><a href="#security">Anti-Proxy Security</a></li>
+            <li><a href="#interactive-demo">Live Demo</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h6>Portals</h6>
+          <ul class="footer-links">
+            <li><a href="/teacher.html">Teacher Portal</a></li>
+            <li><a href="/student.html">Student Check-in</a></li>
+            <li><a href="/teacher.html">Session Analytics</a></li>
+            <li><a href="/teacher.html">Roster Export</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h6>Institution</h6>
+          <ul class="footer-links">
+            <li><a href="#about">About AttendX</a></li>
+            <li><a href="#security">Privacy Standards</a></li>
+            <li><a href="#faq">Compliance & FERPA</a></li>
+            <li><a href="#faq">Faculty Support</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 AttendX Platform Inc. All rights reserved.
+        </div>
+        <div class="system-status">
+          <span class="status-dot"></span>
+          All Systems Operational
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // AttendX Modern SaaS Landing Page Interactions
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Sticky Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // 2. Mobile Menu Drawer Toggle
+  const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  if (mobileToggleBtn && mobileMenu) {
+    mobileToggleBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      mobileToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      mobileMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    });
+
+    // Close mobile menu on clicking any link inside
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        mobileToggleBtn.setAttribute('aria-expanded', 'false');
+        mobileMenu.setAttribute('aria-hidden', 'true');
       });
+    });
+  }
 
-      /* cursor-reactive background lighting — desktop only, mousemove
-         on touch devices is either absent or synthetic/noisy */
-      if (!isMobile) {
-        const cursorGlow = document.createElement("div");
-        cursorGlow.style.cssText = `
-    position:fixed;
-    width:420px;
-    height:420px;
-    border-radius:50%;
-    pointer-events:none;
-    z-index:-4;
-    transform:translate(-50%,-50%);
-    background:radial-gradient(circle,rgba(201,162,39,.09),rgba(154,51,36,.03) 35%,transparent 68%);
-`;
-        document.body.appendChild(cursorGlow);
+  // 3. Hero Floating QR Countdown Simulator
+  const heroCountdownText = document.getElementById('hero-countdown-text');
+  let heroSecondsLeft = 14;
 
-        const lights = document.querySelectorAll(".light");
+  setInterval(() => {
+    heroSecondsLeft--;
+    if (heroSecondsLeft < 0) {
+      heroSecondsLeft = 15;
+    }
+    const secPadded = heroSecondsLeft < 10 ? `0${heroSecondsLeft}` : heroSecondsLeft;
+    if (heroCountdownText) {
+      heroCountdownText.textContent = `Refreshing in 00:${secPadded}`;
+    }
+  }, 1000);
 
-        document.addEventListener("mousemove", (e) => {
-          cursorGlow.style.left = `${e.clientX}px`;
-          cursorGlow.style.top = `${e.clientY}px`;
+  // 4. Interactive Demo Tabs
+  const tabButtons = document.querySelectorAll('.demo-tab-btn');
+  const tabContents = document.querySelectorAll('.demo-tab-content');
 
-          const nx = (e.clientX / innerWidth - 0.5) * 2;
-          const ny = (e.clientY / innerHeight - 0.5) * 2;
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
 
-          lights.forEach((light, i) => {
-            const factor = (i + 1) * 11;
-            light.style.transform = `translate3d(${nx * factor}px,${ny * factor}px,0)`;
-          });
-        });
-
-        /* Portal-card 3D tilt */
-        document.querySelectorAll(".portal").forEach((card) => {
-          card.addEventListener("mousemove", (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            card.style.setProperty("--gx", `${(x / rect.width) * 100}%`);
-            card.style.setProperty("--gy", `${(y / rect.height) * 100}%`);
-
-            const rx = ((y - rect.height / 2) / (rect.height / 2)) * -6;
-            const ry = ((x - rect.width / 2) / (rect.width / 2)) * 7;
-
-            card.style.transform = `perspective(1300px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px) scale(1.018)`;
-          });
-
-          card.addEventListener("mouseleave", () => {
-            card.style.transform =
-              "perspective(1300px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)";
-          });
-        });
-
-        /* Command-console 3D response */
-        const consoleEl = document.getElementById("console");
-
-        document.addEventListener("mousemove", (e) => {
-          if (!consoleEl) return;
-
-          const nx = e.clientX / innerWidth - 0.5;
-          const ny = e.clientY / innerHeight - 0.5;
-
-          consoleEl.style.transform = `perspective(1300px) rotateY(${nx * 4.2}deg) rotateX(${ny * -3.3}deg)`;
-        });
-
-        document.addEventListener("mouseleave", () => {
-          if (consoleEl) {
-            consoleEl.style.transform =
-              "perspective(1300px) rotateY(0deg) rotateX(0deg)";
-          }
-        });
-      } else {
-        /* make sure no leftover inline transforms confuse layout on touch */
-        document.querySelectorAll(".portal").forEach((el) => {
-          el.style.transform = "none";
-        });
-        const consoleEl = document.getElementById("console");
-        if (consoleEl) consoleEl.style.transform = "none";
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-tab');
+      const targetContent = document.getElementById(targetId);
+      if (targetContent) {
+        targetContent.classList.add('active');
       }
+    });
+  });
 
-      /* Fake telemetry is purely decorative and does not touch backend data. */
-      const presentEl = document.getElementById("present");
-      const alertsEl = document.getElementById("alerts");
-      const verifiedEl = document.getElementById("verified");
-      const integrityEl = document.getElementById("integrityText");
-      const meterFill = document.getElementById("meterFill");
+  // 5. Interactive Demo QR Rotation & Countdown
+  const demoSecondsCount = document.getElementById('demo-seconds-count');
+  const demoQrFlash = document.getElementById('demo-qr-flash');
+  const btnForceRotate = document.getElementById('btn-force-rotate');
+  let demoSeconds = 12;
 
-      let present = 48;
-      let alerts = 2;
+  function triggerQrRotationEffect() {
+    if (demoQrFlash) {
+      demoQrFlash.style.opacity = '1';
+      setTimeout(() => {
+        demoQrFlash.style.opacity = '0';
+      }, 600);
+    }
+    // Randomize dynamic QR bits slightly to visually show new pattern
+    const colors = ['#2563EB', '#0F172A'];
+    for (let i = 1; i <= 13; i++) {
+      const bit = document.getElementById(`qr-bit-${i}`);
+      if (bit) {
+        bit.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+      }
+    }
+  }
 
-      setInterval(
-        () => {
-          if (Math.random() > 0.63) present += 1;
-          if (Math.random() > 0.88) alerts = Math.min(5, alerts + 1);
+  setInterval(() => {
+    demoSeconds--;
+    if (demoSeconds <= 0) {
+      demoSeconds = 15;
+      triggerQrRotationEffect();
+    }
+    if (demoSecondsCount) {
+      demoSecondsCount.textContent = `${demoSeconds}s`;
+    }
+  }, 1000);
 
-          const verified = Math.max(0, present - Math.max(0, alerts - 1));
+  if (btnForceRotate) {
+    btnForceRotate.addEventListener('click', () => {
+      demoSeconds = 15;
+      if (demoSecondsCount) {
+        demoSecondsCount.textContent = '15s';
+      }
+      triggerQrRotationEffect();
+    });
+  }
 
-          const integrity = Math.min(
-            99,
-            Math.max(82, Math.round((verified / Math.max(present, 1)) * 100)),
-          );
+  // 6. FAQ Accordion Interaction
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const questionBtn = item.querySelector('.faq-question');
+    if (questionBtn) {
+      questionBtn.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        // Close others for clean accordion experience
+        faqItems.forEach(i => i.classList.remove('active'));
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
 
-          presentEl.textContent = present;
-          alertsEl.textContent = String(alerts).padStart(2, "0");
-          verifiedEl.textContent = verified;
-          integrityEl.textContent = integrity + "%";
-          meterFill.style.width = integrity + "%";
-        },
-        isMobile ? 5200 : 3600,
-      );
-    </script>
-  </body>
+  // 7. Smooth Scroll for in-page anchors
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+});
+</script>
+</body>
 </html>
